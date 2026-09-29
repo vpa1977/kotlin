@@ -13,4 +13,3 @@ publish()
 runtimeJar(rewriteDefaultJarDepsToShadedCompiler())
 
 sourcesJar()
-javadocJar()
