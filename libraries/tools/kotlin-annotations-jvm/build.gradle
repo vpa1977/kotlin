@@ -15,7 +15,6 @@ sourceSets {
 }
 
 RepoArtifacts.sourcesJar(project)
-RepoArtifacts.javadocJar(project)
 
 compileKotlin {
     compilerOptions.freeCompilerArgs = [
