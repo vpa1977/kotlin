@@ -1,6 +1,5 @@
 plugins {
     kotlin("jvm")
-    id("java-test-fixtures")
 }
 
 dependencies {
@@ -14,15 +13,8 @@ dependencies {
     implementation(project(":analysis:decompiled:decompiler-to-file-stubs"))
     implementation(project(":kotlin-util-klib-metadata"))
     implementation(intellijCore())
-
-    testFixturesApi(testFixtures(project(":compiler:tests-common")))
-    testFixturesApi(testFixtures(project(":compiler:tests-common-new")))
-    testFixturesApi(testFixtures(project(":analysis:decompiled:decompiler-to-file-stubs")))
-    testFixturesApi(libs.junit.jupiter.api)
 }
 
 sourceSets {
     "main" { projectDefault() }
-    "test" { none() }
-    "testFixtures" { projectDefault() }
 }
