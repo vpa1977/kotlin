@@ -16,6 +16,3 @@ runtimeJar(rewriteDefaultJarDepsToShadedCompiler())
 sourcesJarWithSourcesFromEmbedded(
     project(":kotlin-assignment-compiler-plugin").tasks.named<Jar>("sourcesJar")
 )
-javadocJarWithJavadocFromEmbedded(
-    project(":kotlin-assignment-compiler-plugin").tasks.named<Jar>("javadocJar")
-)
