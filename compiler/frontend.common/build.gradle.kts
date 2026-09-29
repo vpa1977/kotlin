@@ -12,8 +12,8 @@ dependencies {
 }
 
 sourceSets {
-    "main" { projectDefault() }
-    "test" {}
+    "main" {
+        projectDefault()
+        java.srcDir("gen")
+    }
 }
-
-generatedConfigurationKeys("FrontendConfigurationKeys")
