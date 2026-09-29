@@ -4,27 +4,6 @@ import org.gradle.plugins.ide.idea.model.IdeaModel
 plugins {
     id("gradle-plugin-dependency-configuration")
     id("org.jetbrains.kotlinx.binary-compatibility-validator")
-    id("gradle-plugin-api-reference")
-}
-
-pluginApiReference {
-    enableForAllGradlePluginVariants()
-
-    failOnWarning = true
-
-    additionalDokkaConfiguration {
-        dokkaSourceSets.configureEach {
-            if (name != "common") {
-                suppress = true
-                return@configureEach
-            }
-
-            reportUndocumented = true
-            includes.from("api-reference-description.md")
-        }
-    }
-
-    embeddedProject(project.dependencies.project(":kotlin-gradle-compiler-types"))
 }
 
 dependencies {
