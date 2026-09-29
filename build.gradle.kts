@@ -759,6 +759,12 @@ gradle.taskGraph.whenReady {
     }
 }
 
+// KotlinBuildPublishingPlugin wires every published project's `install` task
+// into this root lifecycle task.
+tasks.register("mvnInstall") {
+    group = "publishing"
+}
+
 gradle.taskGraph.whenReady(checkYarnAndNPMSuppressed)
 
 plugins.withType(org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootPlugin::class) {
