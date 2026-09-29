@@ -15,7 +15,6 @@ sourceSets {
             srcDirs( "src", "instrumentation/src")
         }
     }
-    "test" {}
 }
 
 runtimeJar {
