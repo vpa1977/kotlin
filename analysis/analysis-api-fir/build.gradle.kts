@@ -3,10 +3,6 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 plugins {
     kotlin("jvm")
     id("generated-sources")
-    id("java-test-fixtures")
-    id("project-tests-convention")
-    id("test-data-manager")
-    id("test-inputs-check")
 }
 
 dependencies {
@@ -40,76 +36,13 @@ dependencies {
     implementation(project(":native:native.config"))
     implementation(libs.caffeine)
     implementation(libs.opentelemetry.api)
-
-    testFixturesImplementation(testFixtures(project(":analysis:low-level-api-fir")))
-    testFixturesApi(project(":analysis:analysis-api-standalone:analysis-api-standalone-base"))
-    testFixturesImplementation(testFixtures(project(":compiler:tests-common")))
-    testFixturesApi(testFixtures(project(":compiler:test-infrastructure-utils")))
-    testFixturesApi(testFixtures(project(":compiler:test-infrastructure")))
-    testFixturesImplementation(testFixtures(project(":compiler:tests-common-new")))
-    testFixturesImplementation(testFixtures(project(":compiler:fir:analysis-tests:legacy-fir-tests")))
-    testFixturesApi(testFixtures(project(":analysis:analysis-api-impl-base")))
-    testFixturesImplementation(testFixtures(project(":analysis:decompiled:decompiler-to-file-stubs")))
-    testFixturesImplementation(project(":analysis:analysis-api-standalone:analysis-api-fir-standalone-base"))
-    testFixturesImplementation(project(":analysis:decompiled:decompiler-to-file-stubs"))
-    testFixturesImplementation(project(":analysis:decompiled:decompiler-to-psi"))
-    testFixturesImplementation(kotlinTest("junit"))
-    testFixturesApi(testFixtures(project(":analysis:analysis-test-framework")))
-
-    testImplementation(testFixtures(project(":analysis:low-level-api-fir")))
-
-    testCompileOnly(toolsJarApi())
-    testRuntimeOnly(toolsJar())
-    testFixturesApi(platform(libs.junit.bom))
-    testFixturesImplementation(libs.junit.jupiter.api)
-    testRuntimeOnly(libs.junit.jupiter.engine)
 }
 
 sourceSets {
     "main" { projectDefault() }
-    "test" {
-        projectDefault()
-        generatedTestDir()
-    }
-    "testFixtures" { projectDefault() }
 }
 
 optInToUnsafeDuringIrConstructionAPI()
-
-projectTests {
-    testTask(
-        jUnitMode = JUnitMode.JUnit5,
-        defineJDKEnvVariables = listOf(JdkMajorVersion.JDK_11_0)
-    ) {
-        useJUnitPlatform()
-
-        extensions.configure<TestInputsCheckExtension> {
-            allowFlightRecorder = true
-        }
-    }
-
-    testGenerator("org.jetbrains.kotlin.analysis.api.fir.test.TestGeneratorKt")
-
-    testData(project.isolated, "testData")
-    testData(project(":analysis:analysis-api").isolated, "testData")
-
-    withJvmStdlibAndReflect()
-    withStdlibCommon()
-    withJsRuntime()
-    withWasmRuntime()
-    withTestJar()
-    withAnnotations()
-    withMockJdkRuntime()
-    withMockJdkAnnotationsJar()
-    withScriptRuntime()
-    withPluginSandboxAnnotations()
-    withWasmRuntime()
-
-    @OptIn(KotlinCompilerDistUsage::class)
-    withDist()
-}
-
-testsJar()
 
 allprojects {
     tasks.withType<KotlinJvmCompile>().configureEach {
