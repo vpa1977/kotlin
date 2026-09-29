@@ -23,9 +23,7 @@ optInToUnsafeDuringIrConstructionAPI()
 
 sourceSets {
     "main" { projectDefault() }
-    "test" { none() }
 }
 
 runtimeJar()
-javadocJar()
 sourcesJar()
