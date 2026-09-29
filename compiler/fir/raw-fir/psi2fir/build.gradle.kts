@@ -5,8 +5,6 @@
 
 plugins {
     kotlin("jvm")
-    id("java-test-fixtures")
-    id("project-tests-convention")
 }
 
 dependencies {
@@ -18,32 +16,8 @@ dependencies {
 
     compileOnly(intellijCore())
     compileOnly(libs.guava)
-
-    testFixturesApi(libs.junit4)
-    testFixturesApi(testFixtures(project(":compiler:tests-common")))
-    testFixturesApi(commonDependency("org.jetbrains.kotlin:kotlin-reflect")) { isTransitive = false }
-
-    testCompileOnly(kotlinTest("junit"))
-
-    testFixturesCompileOnly(intellijCore())
-    testImplementation(intellijCore())
 }
 
 sourceSets {
     "main" { projectDefault() }
-    "test" {
-        projectDefault()
-        generatedTestDir()
-    }
-    "testFixtures" { projectDefault() }
 }
-
-projectTests {
-    testTask(jUnitMode = JUnitMode.JUnit4) {
-        workingDir = rootDir
-    }
-
-    testGenerator("org.jetbrains.kotlin.fir.builder.TestGeneratorForPsi2FirKt")
-}
-
-testsJar()
