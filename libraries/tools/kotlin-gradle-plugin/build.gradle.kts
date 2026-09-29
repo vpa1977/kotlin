@@ -2,17 +2,11 @@ import GenerateKgpBuildConstantsTask.Companion.registerGenerateKgpBuildConstants
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import gradle.GradlePluginVariant
 import org.gradle.plugin.compatibility.compatibility
-import org.jetbrains.kotlin.build.androidsdkprovisioner.ProvisioningType
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id("gradle-plugin-common-configuration")
-    id("kotlin-git.gradle-build-conventions.binary-compatibility-extended")
-    id("android-sdk-provisioner")
     id("asm-deprecating-transformer")
-    id("project-tests-convention")
-    `java-test-fixtures`
 }
 
 repositories {
@@ -53,69 +47,6 @@ registerKotlinSourceForVersionRange(
     GradlePluginVariant.GRADLE_811,
 )
 
-tasks.test {
-    useJUnitPlatform {
-        exclude("**/*LincheckTest.class")
-    }
-    val jdk8Provider = project.getToolchainJdkHomeFor(JdkMajorVersion.JDK_1_8)
-    val jdk11Provider = project.getToolchainJdkHomeFor(JdkMajorVersion.JDK_11_0)
-    doFirst {
-        systemProperty("jdk8Home", jdk8Provider.get())
-        systemProperty("jdk11Home", jdk11Provider.get())
-    }
-}
-
-tasks.withType<Test>().configureEach {
-    javaLauncher.set(project.getToolchainLauncherFor(JdkMajorVersion.JDK_21_0))
-}
-
-tasks.register<Test>("lincheckTest") {
-    classpath = sourceSets.test.get().runtimeClasspath
-    testClassesDirs = sourceSets.test.get().output.classesDirs
-    jvmArgs(
-        "--add-opens", "java.base/jdk.internal.misc=ALL-UNNAMED",
-        "--add-exports", "java.base/jdk.internal.util=ALL-UNNAMED",
-        "--add-exports", "java.base/sun.security.action=ALL-UNNAMED"
-    )
-    useJUnitPlatform {
-        include("**/*LincheckTest.class")
-    }
-}
-
-binaryCompatibilityValidator {
-    targets.configureEach {
-        ignoredPackages.addAll(
-            "org.jetbrains.kotlin.gradle.internal",
-            "org.jetbrains.kotlin.gradle.plugin.internal",
-            "org.jetbrains.kotlin.gradle.scripting.internal",
-            "org.jetbrains.kotlin.gradle.targets.js.internal",
-            "org.jetbrains.kotlin.gradle.targets.native.internal",
-            "org.jetbrains.kotlin.gradle.tasks.internal",
-            "org.jetbrains.kotlin.gradle.testing.internal",
-        )
-        ignoredMarkers.add("org.jetbrains.kotlin.gradle.InternalKotlinGradlePluginApi")
-
-        inputClasses.from(project.sourceSets.main.map { it.output.classesDirs })
-        inputClasses.from(project.sourceSets.common.map { it.output.classesDirs })
-    }
-
-    val externalApiMarkers = setOf(
-        "org.jetbrains.kotlin.gradle.ExternalKotlinTargetApi",
-        "org.jetbrains.kotlin.gradle.ComposeKotlinGradlePluginApi",
-        "org.jetbrains.kotlin.gradle.dsl.KotlinGradlePluginPublicDsl",
-    )
-
-    targets.register("all") {
-        // Dump of all public API, intended for regular usage in build scripts.
-        ignoredMarkers.addAll(externalApiMarkers)
-    }
-
-    targets.register("external") {
-        // Dump of all external API, intended for use in official JetBrains plugins like Compose.
-        publicMarkers.addAll(externalApiMarkers)
-    }
-}
-
 val unpublishedCompilerRuntimeDependencies = listOf(
     // TODO: remove in KT-70247
     ":compiler:cli", // for MessageRenderer, related to MessageCollector usage
@@ -137,8 +68,6 @@ val unpublishedCompilerRuntimeDependencies = listOf(
     ":js:js.config", // for k/js task
     ":wasm:wasm.config", // for k/js task
 )
-
-val coreDepsVersion = libs.versions.kotlin.`for`.gradle.plugins.compilation.get()
 
 dependencies {
     commonApi(platform(project(":kotlin-gradle-plugins-bom")))
@@ -244,23 +173,6 @@ dependencies {
 
     commonCompileOnly(libs.bouncycastle.bcpkix.jdk18on)
     commonCompileOnly(libs.bouncycastle.bcpg.jdk18on)
-
-    testCompileOnly(project(":compiler"))
-
-    testImplementation(commonDependency("org.jetbrains.teamcity:serviceMessages"))
-    testImplementation(testFixtures(project(":kotlin-build-common")))
-    testImplementation(testFixtures(project(":compiler:test-infrastructure-utils")))
-    testImplementation(project(":kotlin-compiler-runner"))
-    testImplementation(kotlin("test-junit5", coreDepsVersion))
-    testImplementation(libs.junit.jupiter.api)
-    testImplementation(libs.junit.jupiter.params)
-
-    testImplementation(project(":kotlin-gradle-statistics"))
-    testImplementation(project(":kotlin-tooling-metadata"))
-    testImplementation(libs.lincheck)
-    testImplementation(commonDependency("org.jetbrains.kotlin:kotlin-reflect")) { isTransitive = false }
-    testImplementation(libs.slf4j.api)
-
 }
 
 configurations.commonCompileClasspath.get().exclude("org.jetbrains.kotlinx", "kotlinx-coroutines-core")
@@ -434,48 +346,6 @@ tasks {
             deprecateClassesByPattern("org.jetbrains.kotlin.**", deprecationMessage, exclusions)
         }
     }
-    GradlePluginVariant.values().forEach { variant ->
-        val sourceSet = sourceSets.getByName(variant.sourceSetName)
-        val taskSuffix = sourceSet.jarTaskName.capitalize()
-        val shadowJarTaskName = "$EMBEDDABLE_COMPILER_TASK_NAME$taskSuffix"
-        asmDeprecation {
-            val dumpTask = registerDumpDeprecationsTask(shadowJarTaskName, taskSuffix)
-            val dumpAllTask = getOrCreateTask<Task>("dumpDeprecations") {
-                dependsOn(dumpTask)
-            }
-            val expectedFileDoesNotExistMessage = """
-                The file with expected deprecations for the compiler modules bundled into KGP does not exist.
-                Run ./gradlew ${project.path}:${dumpTask.name} first to create it.
-                You may also use ./gradlew ${project.path}:${dumpAllTask.name} to dump deprecations of all fat jars.
-                Context: https://youtrack.jetbrains.com/issue/KT-70251
-            """.trimIndent()
-            val checkFailureMessage = """
-                Expected deprecations applied to the compiler modules bundled into KGP does not match with the actually applied ones.
-                Run ./gradlew ${project.path}:${dumpTask.name} to see the difference.
-                You may also use ./gradlew ${project.path}:${dumpAllTask.name} to dump deprecations of all fat jars.
-                Use INFO level log for the exact deprecated classes set.
-                Either commit the difference or adjust the package relocation rules in ${buildFile.absolutePath}
-                Please be sure to leave a comment explaining any changes related to this failure clear enough.
-                Context: https://youtrack.jetbrains.com/issue/KT-70251
-            """.trimIndent()
-            val checkTask =
-                registerCheckDeprecationsTask(shadowJarTaskName, taskSuffix, expectedFileDoesNotExistMessage, checkFailureMessage)
-            named("check") {
-                dependsOn(checkTask)
-            }
-        }
-    }
-}
-
-tasks.named("validatePlugins") {
-    // We're manually registering and wiring validation tasks for each plugin variant
-    enabled = false
-}
-
-projectTests {
-    testTask(jUnitMode = JUnitMode.JUnit5) {
-        workingDir = rootDir
-    }
 }
 
 gradlePlugin {
@@ -573,174 +443,10 @@ gradlePlugin {
     }
 }
 
-// Gradle plugins functional tests
-
 // Workaround for KT-75550
 tasks.named("gradle813Jar") {
     enabled = false
 }
-
-val gradlePluginVariantForFunctionalTests = GradlePluginVariant.GRADLE_813
-val gradlePluginVariantSourceSet = sourceSets.getByName(gradlePluginVariantForFunctionalTests.sourceSetName)
-val functionalTestSourceSet = sourceSets.create("functionalTest") {
-    compileClasspath += gradlePluginVariantSourceSet.output
-    runtimeClasspath += gradlePluginVariantSourceSet.output
-
-    configurations.getByName(implementationConfigurationName) {
-        extendsFrom(configurations.getByName(gradlePluginVariantSourceSet.implementationConfigurationName))
-        extendsFrom(configurations.getByName(testSourceSet.implementationConfigurationName))
-    }
-
-    configurations.getByName(runtimeOnlyConfigurationName) {
-        extendsFrom(configurations.getByName(gradlePluginVariantSourceSet.runtimeOnlyConfigurationName))
-        extendsFrom(configurations.getByName(testSourceSet.runtimeOnlyConfigurationName))
-    }
-}
-
-sourceSets.getByName("testFixtures") {
-    /*
-     * testFixtures source set is closer to regular dependencies,
-     * so that it already has access to main and its transitive API dependencies.
-     * Thus, there's no need to copy the main dependencies.
-     *
-     * Instead of copying dependencies from testSourceSet, define granular dependencies here,
-     * as textFixtures are shared with integration test projects,
-     * and it's preferable to have granular control over them.
-     * Also, it prevents compilation problems due to dependencies from the test source set of too high LV (like compiler modules).
-     */
-    dependencies {
-        add(implementationConfigurationName, commonDependency("org.jetbrains.kotlin:kotlin-reflect")) { isTransitive = false }
-        add(implementationConfigurationName, gradleApi())
-        add(implementationConfigurationName, libs.junit.jupiter.api)
-    }
-}
-
-// Enforce lowest jvm version to make testFixtures compatible with KGP-IT injections
-val testFixturesCompilation = kotlin.target.compilations.getByName("testFixtures")
-testFixturesCompilation.compileJavaTaskProvider.configure {
-    sourceCompatibility = JavaLanguageVersion.of(8).toString()
-    targetCompatibility = JavaLanguageVersion.of(8).toString()
-}
-testFixturesCompilation.compileTaskProvider.configure {
-    with(this as KotlinCompile) {
-        configureGradleCompatibility()
-    }
-}
-
-val functionalTestCompilation = kotlin.target.compilations.getByName("functionalTest")
-functionalTestCompilation.compileJavaTaskProvider.configure {
-    sourceCompatibility = JavaLanguageVersion.of(17).toString()
-    targetCompatibility = JavaLanguageVersion.of(17).toString()
-}
-functionalTestCompilation.compileTaskProvider.configure {
-    with(this as KotlinCompile) {
-        kotlinJavaToolchain.toolchain.use(project.getToolchainLauncherFor(JdkMajorVersion.JDK_17_0))
-    }
-}
-
-functionalTestCompilation.configurations.pluginConfiguration.dependencies.add(
-    dependencies.create("org.jetbrains.kotlin:kotlin-serialization-compiler-plugin-embeddable:${libs.versions.kotlin.`for`.gradle.plugins.compilation.get()}")
-)
-functionalTestCompilation.associateWith(kotlin.target.compilations.getByName(gradlePluginVariantForFunctionalTests.sourceSetName))
-functionalTestCompilation.associateWith(kotlin.target.compilations.getByName("common"))
-functionalTestCompilation.associateWith(testFixturesCompilation)
-
-tasks.register<Test>("functionalTest") {
-    systemProperty("kotlinVersion", rootProject.extra["kotlinVersion"] as String)
-    systemProperty("konanProperties", rootDir.resolve("kotlin-native/konan/konan.properties"))
-    useJUnitPlatform()
-}
-
-tasks.register<Test>("functionalUnitTest") {
-    include("**/org/jetbrains/kotlin/gradle/unitTests/**")
-    systemProperty("kotlinVersion", rootProject.extra["kotlinVersion"] as String)
-    systemProperty("konanProperties", rootDir.resolve("kotlin-native/konan/konan.properties"))
-}
-
-tasks.register<Test>("functionalRegressionTest") {
-    include("**/org/jetbrains/kotlin/gradle/regressionTests/**")
-}
-
-tasks.register<Test>("functionalDependencyResolutionTest") {
-    include("**/org/jetbrains/kotlin/gradle/dependencyResolutionTests/**")
-}
-
-val acceptLicensesTask = with(androidSdkProvisioner) {
-    registerAcceptLicensesTask()
-}
-
-tasks.withType<Test>().configureEach {
-    if (!name.startsWith("functional")) return@configureEach
-
-    group = JavaBasePlugin.VERIFICATION_GROUP
-    description = "Runs functional tests"
-    testClassesDirs = functionalTestSourceSet.output.classesDirs
-    classpath = functionalTestSourceSet.runtimeClasspath
-    workingDir = projectDir
-    dependsOnKotlinGradlePluginInstall()
-    androidSdkProvisioner {
-        provideToThisTaskAsSystemProperty(ProvisioningType.SDK)
-        dependsOn(acceptLicensesTask)
-    }
-    maxParallelForks = 8
-    maxHeapSize = "4G" // KT-72460 to investigate why we need to change heap size
-
-    testLogging {
-        events("passed", "skipped", "failed")
-    }
-
-    systemProperty("resourcesPath", layout.projectDirectory.dir("src/functionalTest/resources").asFile)
-
-    //region custom Maven Local directory
-    // The Maven Local dir that Gradle uses can be customised via system property `maven.repo.local`.
-    // The functional tests require artifacts are published to Maven Local.
-    // To make sure the tests uses the same `maven.repo.local` as is configured
-    // in the buildscript, forward the value of `maven.repo.local` into the test process.
-    val mavenRepoLocal = providers.systemProperty("maven.repo.local").orNull
-    if (mavenRepoLocal != null) {
-        // Only set `maven.repo.local` if it's present in the buildscript,
-        // to avoid `maven.repo.local` being `null`.
-        systemProperty("maven.repo.local", mavenRepoLocal)
-    }
-    //endregion
-}
-
-dependencies {
-    val implementation = project.configurations.getByName(functionalTestSourceSet.implementationConfigurationName)
-    val compileOnly = project.configurations.getByName(functionalTestSourceSet.compileOnlyConfigurationName)
-
-    implementation(libs.android.gradle.plugin.gradle)
-    implementation(libs.android.gradle.plugin.gradle.api)
-    compileOnly(libs.android.tools.common)
-    implementation(gradleKotlinDsl())
-    implementation(project(":kotlin-gradle-plugin-tcs-android"))
-    implementation(project(":kotlin-tooling-metadata"))
-    implementation(project.dependencies.testFixtures(project(":kotlin-gradle-plugin-idea")))
-    implementation("com.github.gundy:semver4j:0.16.4:nodeps") {
-        exclude(group = "*")
-    }
-    implementation("org.reflections:reflections:0.10.2")
-    implementation(project(":compose-compiler-gradle-plugin"))
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json") {
-        version {
-            strictly(GradlePluginVariant.GRADLE_MIN.compatibleKotlinxJsonSerializationVersion)
-        }
-    }
-    implementation(intellijPlatformUtil())
-    implementation(libs.junit.jupiter.engine)
-}
-
-tasks.named("check") {
-    dependsOn("functionalTest")
-    dependsOn("lincheckTest")
-}
-
-fun avoidPublishingTestFixtures() {
-    val javaComponent = components["java"] as AdhocComponentWithVariants
-    javaComponent.withVariantsFromConfiguration(configurations["testFixturesApiElements"]) { skip() }
-    javaComponent.withVariantsFromConfiguration(configurations["testFixturesRuntimeElements"]) { skip() }
-}
-avoidPublishingTestFixtures()
 
 tasks.withType<Jar>().configureEach {
     if (name.endsWith("SourcesJar")) {
@@ -762,4 +468,12 @@ val generateKgpBuildConstants = registerGenerateKgpBuildConstantsTask {
 kotlin.sourceSets.common {
     @OptIn(ExperimentalKotlinGradlePluginApi::class)
     generatedKotlin.srcDir(generateKgpBuildConstants)
+}
+
+
+// com.gradle.plugin-publish unconditionally adds a javadocJar to the publication
+// (in afterEvaluate); drop the javadoc variant from the published component.
+afterEvaluate {
+    (components["java"] as org.gradle.api.component.AdhocComponentWithVariants)
+        .withVariantsFromConfiguration(configurations["javadocElements"]) { skip() }
 }
