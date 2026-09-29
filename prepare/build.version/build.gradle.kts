@@ -2,29 +2,7 @@
 
 import java.io.File
 
-val buildVersionFilePath = layout.buildDirectory.file("build.txt")
-val buildVersion by configurations.creating
-val buildNumber: String by rootProject.extra
 val kotlinVersion: String by rootProject.extra
-
-val writeBuildNumber by tasks.registering {
-    val versionFile = buildVersionFilePath
-    val buildNumber = buildNumber
-    inputs.property("version", buildNumber)
-    outputs.file(versionFile)
-    doLast {
-        with(versionFile.get().asFile) {
-            parentFile.mkdirs()
-            writeText(buildNumber)
-        }
-    }
-}
-
-artifacts.add(buildVersion.name, buildVersionFilePath) {
-    builtBy(writeBuildNumber)
-}
-
-
 
 val writeStdlibVersion by tasks.registering {
     val kotlinVersionLocal = kotlinVersion
@@ -53,10 +31,4 @@ val writeStdlibVersion by tasks.registering {
             "$major, $minor, ${optPatch.takeIf { it.isNotEmpty() } ?: "0" }"
         }
     }
-}
-
-val writePluginVersion by tasks.registering // Remove this task after removing usages in the TeamCity build
-
-val writeVersions by tasks.registering {
-    dependsOn(writeBuildNumber, writeStdlibVersion)
 }
