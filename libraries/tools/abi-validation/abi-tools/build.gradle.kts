@@ -1,6 +1,5 @@
 plugins {
     kotlin("jvm")
-    id("project-tests-convention")
 }
 
 kotlin {
@@ -9,14 +8,8 @@ kotlin {
 
 publish()
 
-standardPublicJars()
-
-projectTests {
-    testTask(jUnitMode = JUnitMode.JUnit4) {
-        useJUnit()
-        jvmArgs("-ea")
-    }
-}
+runtimeJar()
+sourcesJar()
 
 dependencies {
     api(project(":libraries:tools:abi-validation:abi-tools-api"))
@@ -29,13 +22,6 @@ dependencies {
     embedded(libs.intellij.asm)
 
     implementation(libs.diff.utils)
-
-    testImplementation(kotlinTest("junit"))
-    testImplementation(libs.junit4)
-    testImplementation(kotlinStdlib())
-    testImplementation(libs.intellij.asm)
-    // using `KonanTarget` class
-    testImplementation(project(":native:kotlin-native-utils"))
 }
 
 runtimeJarWithRelocation {
