@@ -1,6 +1,5 @@
 plugins {
     kotlin("jvm")
-    id("generated-sources")
 }
 
 dependencies {
@@ -16,8 +15,9 @@ dependencies {
 }
 
 sourceSets {
-    "main" { projectDefault() }
-    "test" {}
+    "main" {
+        projectDefault()
+        java.srcDir("gen")
+    }
 }
 
-generatedConfigurationKeys("NativeConfigurationKeys")
