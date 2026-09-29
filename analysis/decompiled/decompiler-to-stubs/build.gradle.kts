@@ -10,14 +10,10 @@ dependencies {
     api(project(":core:deserialization"))
     implementation(project(":core:compiler.common.jvm"))
     implementation(project(":kotlin-util-klib"))
-    testImplementation(testFixtures(project(":compiler:tests-common-new")))
 
     api(intellijCore())
 }
 
 sourceSets {
     "main" { projectDefault() }
-    "test" {}
 }
-
-
