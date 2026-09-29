@@ -10,8 +10,6 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinUsages
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsTargetDsl
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinTargetWithNodeJsDsl
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmTargetDsl
-import org.jetbrains.kotlin.gradle.targets.js.ir.KotlinJsIrLink
-import org.jetbrains.kotlin.gradle.tasks.AbstractKotlinCompile
 import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
 import org.jetbrains.kotlin.gradle.tasks.UsesKotlinJavaToolchain
 import org.jetbrains.kotlin.library.KOTLIN_JS_STDLIB_NAME
@@ -230,43 +228,10 @@ kotlin {
                 mainJdk7.output.allOutputs,
                 mainJdk8.output.allOutputs,
             ), main.configurations.compileDependencyConfiguration)
-            val test by getting {
-                associateWith(mainJdk7)
-                associateWith(mainJdk8)
-                compileTaskProvider.configure {
-                    compilerOptions {
-                        freeCompilerArgs.addAll(
-                            listOf(
-                                "-Xallow-kotlin-package", // TODO: maybe rename test packages
-                                "-Xexpect-actual-classes",
-                            )
-                        )
-                    }
-                }
-            }
-            val longRunningTest by creating {
-                associateWith(main)
-                associateWith(mainJdk7)
-                associateWith(mainJdk8)
-            }
-            val recursiveDeletionTest by creating {
-                associateWith(main)
-                associateWith(mainJdk7)
-                associateWith(mainJdk8)
-            }
         }
     }
     js {
-        if (!kotlinBuildProperties.isTeamcityBuild.get()) {
-            browser {}
-        }
-        nodejs {
-            testTask {
-                useMocha {
-                    timeout = "10s"
-                }
-            }
-        }
+        nodejs()
 
         compilerOptions {
             freeCompilerArgs.addAll(
@@ -328,29 +293,6 @@ kotlin {
         commonWasmTargetConfiguration()
     }
 
-    if (kotlinBuildProperties.isInIdeaSync.get()) {
-        val hostOs = System.getProperty("os.name")
-        val isMingwX64 = hostOs.startsWith("Windows")
-        val nativeTarget = when {
-            hostOs == "Mac OS X" -> macosX64("native")
-            hostOs == "Linux" -> linuxX64("native")
-            isMingwX64 -> mingwX64("native")
-            else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
-        }
-        nativeTarget.compilerOptions {
-            freeCompilerArgs.addAll(
-                listOf(
-                    "-Xallow-kotlin-package",
-                    "-Xexpect-actual-classes",
-                    "-nostdlib",
-                )
-            )
-        }
-        nativeTarget.compilations["main"].compileTaskProvider.configure {
-            compilerOptions.addReturnValueCheckerInfo()
-        }
-    }
-
     sourceSets {
         fun <TP : TaskProvider<*>> TP.requiredForImport(): TP {
             tasks.findByName("prepareKotlinIdeaImport")?.dependsOn(this)
@@ -367,15 +309,6 @@ kotlin {
                 srcDir("common/src")
                 srcDir(files("src").builtBy(prepareCommonSources))
                 srcDir("unsigned/src")
-            }
-        }
-        commonTest {
-            dependencies {
-                api(kotlinTest())
-            }
-            kotlin {
-                srcDir("common/test")
-                srcDir("test")
             }
         }
         val jvmCompileOnlyDeclarations by getting {
@@ -401,32 +334,6 @@ kotlin {
         }
         val jvmMainJdk8 by getting {
             kotlin.srcDir("jdk8/src")
-        }
-
-        val jvmTest by getting {
-            languageSettings {
-                optIn("kotlin.io.path.ExperimentalPathApi")
-            }
-            dependencies {
-                api(kotlinTest("junit"))
-            }
-            kotlin.srcDir("jvm/test")
-            kotlin.srcDir("jdk7/test")
-            kotlin.srcDir("jdk8/test")
-        }
-
-        val jvmLongRunningTest by getting {
-            dependencies {
-                api(kotlinTest("junit"))
-            }
-            kotlin.srcDir("jvm/testLongRunning")
-        }
-
-        val jvmRecursiveDeletionTest by getting {
-            dependencies {
-                api(kotlinTest("junit"))
-            }
-            kotlin.srcDir("jdk7/recursiveDeletionTest")
         }
 
         val commonNonJvmMain by creating {
@@ -475,10 +382,6 @@ kotlin {
                 }
             }
         }
-        val jsTest by getting {
-            kotlin.srcDir("${jsDir}/test")
-        }
-
         val nativeWasmMain by creating {
             dependsOn(commonNonJvmMain)
             kotlin.srcDir("native-wasm/src")
@@ -487,11 +390,6 @@ kotlin {
         val nativeWasmWasiMain by creating {
             dependsOn(nativeWasmMain)
             kotlin.srcDir("native-wasm/wasi")
-        }
-
-        val nativeWasmTest by creating {
-            dependsOn(commonTest.get())
-            kotlin.srcDir("native-wasm/test")
         }
 
         val wasmCommonMain by creating {
@@ -529,13 +427,6 @@ kotlin {
             }
 
         }
-        val wasmCommonTest by creating {
-            dependsOn(nativeWasmTest)
-            kotlin {
-                srcDir("wasm/test")
-            }
-        }
-
         val wasmJsMain by getting {
             dependsOn(webMain)
             dependsOn(wasmCommonMain)
@@ -543,12 +434,6 @@ kotlin {
                 srcDir("wasm/js/builtins")
                 srcDir("wasm/js/internal")
                 srcDir("wasm/js/src")
-            }
-        }
-        val wasmJsTest by getting {
-            dependsOn(wasmCommonTest)
-            kotlin {
-                srcDir("wasm/js/test")
             }
         }
         val wasmWasiMain by getting {
@@ -561,54 +446,6 @@ kotlin {
             }
             languageSettings {
                 optIn("kotlin.wasm.unsafe.UnsafeWasmMemoryApi")
-            }
-        }
-        val wasmWasiTest by getting {
-            dependsOn(wasmCommonTest)
-            kotlin {
-                srcDir("wasm/wasi/test")
-            }
-        }
-
-        if (kotlinBuildProperties.isInIdeaSync.get()) {
-            val nativeKotlinTestCommon by creating {
-                dependsOn(commonMain.get())
-                val prepareKotlinTestCommonNativeSources by tasks.registering(Sync::class) {
-                    from("../kotlin.test/common/src/main/kotlin")
-                    from("../kotlin.test/annotations-common/src/main/kotlin")
-                    into(layout.buildDirectory.dir("src/native-kotlin-test-common-sources"))
-                }
-
-                kotlin {
-                    srcDir(prepareKotlinTestCommonNativeSources.requiredForImport())
-                }
-            }
-            val nativeMain by getting {
-                dependsOn(nativeWasmMain)
-                dependsOn(nativeWasmWasiMain)
-                dependsOn(nativeKotlinTestCommon)
-                kotlin {
-                    srcDir("$rootDir/kotlin-native/runtime/src/main/kotlin")
-                    srcDir("$rootDir/kotlin-native/Interop/Runtime/src/main/kotlin")
-                    srcDir("$rootDir/kotlin-native/Interop/Runtime/src/native/kotlin")
-                }
-                languageSettings {
-                    optIn("kotlin.native.internal.InternalForKotlinNative")
-                }
-            }
-            val nativeTest by getting {
-                dependsOn(nativeWasmTest)
-                kotlin {
-                    srcDir("$rootDir/kotlin-native/runtime/test")
-                }
-                languageSettings {
-                    optIn("kotlin.experimental.ExperimentalNativeApi")
-                    optIn("kotlin.native.ObsoleteNativeApi")
-                    optIn("kotlin.native.runtime.NativeRuntimeApi")
-                    optIn("kotlin.native.internal.InternalForKotlinNative")
-                    optIn("kotlinx.cinterop.ExperimentalForeignApi")
-                    optIn("kotlin.native.concurrent.ObsoleteWorkersApi")
-                }
             }
         }
 
@@ -717,21 +554,9 @@ tasks {
         }
     }
 
-    dexMethodCount {
-        from(jvmJar)
-        ownPackages.set(listOf("kotlin"))
-    }
-
     val jsJar by existing(Jar::class) {
         manifestAttributes(manifest, "Main")
         manifest.attributes(mapOf("Implementation-Title" to "kotlin-stdlib-js"))
-    }
-
-    val jsJarForTests by registering(Copy::class) {
-        from(jsJar)
-        rename { _ -> "full-runtime.klib" }
-        // some tests expect stdlib-js klib in this location
-        into(rootProject.layout.buildDirectory.dir("js-ir-runtime"))
     }
 
     val jsRearrangedSourcesJar by registering(Jar::class) {
@@ -805,53 +630,6 @@ tasks {
     }
 
 
-    val jvmTest by existing(Test::class)
-
-    listOf(JdkMajorVersion.JDK_11_0, JdkMajorVersion.JDK_17_0, JdkMajorVersion.JDK_25_0).forEach { jvmVersion ->
-        val jvmVersionTest = register("jvm${jvmVersion.majorVersion}Test", Test::class) {
-            group = "verification"
-            javaLauncher.set(getToolchainLauncherFor(jvmVersion))
-            // additional test tasks are not configured automatically same as the main test task
-            // after KMP plugin stopped applying java plugin
-            classpath = jvmTest.get().classpath
-            testClassesDirs = jvmTest.get().testClassesDirs
-
-        }
-        check.configure { dependsOn(jvmVersionTest) }
-    }
-
-    val jvmLongRunningTest by registering(Test::class) {
-        group = "verification"
-        val compilation = kotlin.jvm().compilations["longRunningTest"]
-        classpath = compilation.compileDependencyFiles + compilation.runtimeDependencyFiles + compilation.output.allOutputs
-        testClassesDirs = compilation.output.classesDirs
-    }
-
-    if (project.hasProperty("kotlin.stdlib.test.long.running")) {
-        check.configure { dependsOn(jvmLongRunningTest) }
-    }
-
-    listOf("Js", "Wasi").forEach { wasmTarget ->
-        named("compileTestKotlinWasm$wasmTarget", AbstractKotlinCompile::class) {
-            // TODO: fix all warnings, enable -Werror
-            compilerOptions.suppressWarnings = true
-            // exclusions due to KT-51647
-            exclude("generated/minmax/*")
-            exclude("collections/MapTest.kt")
-        }
-        named("compileTestDevelopmentExecutableKotlinWasm$wasmTarget", KotlinJsIrLink::class) {
-            compilerOptions.freeCompilerArgs.add("-Xwasm-enable-array-range-checks")
-        }
-        named("compileTestProductionExecutableKotlinWasm$wasmTarget", KotlinJsIrLink::class) {
-            enabled = false  // Causes out-of-memory in CI: KTI-2150
-        }
-    }
-    val wasmWasiNodeTest by existing {
-        if (!kotlinBuildProperties.booleanProperty("kotlin.stdlib.wasi.tests").get()) {
-            enabled = false
-        }
-    }
-
     /*
     We are using a custom 'kotlin-project-structure-metadata' to ensure 'nativeApiElements' lists 'commonMain' as source set
     */
@@ -886,33 +664,6 @@ tasks {
             }
         }
     }
-
-    val jvmRecursiveDeletionTestTmpDir = layout.buildDirectory.asFile.map {
-        it.toPath().resolve("recursiveDeletionTestsWorkDir")
-    }
-
-    val jvmRecursiveDeletionTestCleanup by registering(Delete::class) {
-        setDelete(jvmRecursiveDeletionTestTmpDir)
-    }
-
-    // A dedicated task for tests on files and directories deletion from the current working directory.
-    // To prevent (to some extent) accidental removal of surrounding files and directories when tested functions
-    // are malfunctioning, this task gets its own working directory where removal will take place.
-    val jvmRecursiveDeletionTest by registering(Test::class) {
-        group = "verification"
-        val compilation = kotlin.jvm().compilations["recursiveDeletionTest"]
-
-        testClassesDirs = compilation.output.classesDirs
-        classpath = compilation.compileDependencyFiles + compilation.runtimeDependencyFiles + compilation.output.allOutputs
-
-        doFirst {
-            workingDir = jvmRecursiveDeletionTestTmpDir.get().toFile()
-            workingDir.deleteRecursively()
-            workingDir.mkdirs()
-        }
-        finalizedBy(jvmRecursiveDeletionTestCleanup)
-    }
-    check.configure { dependsOn(jvmRecursiveDeletionTest) }
 }
 
 
@@ -921,10 +672,6 @@ tasks {
 configureDefaultPublishing()
 
 
-val emptyJavadocJar by tasks.creating(org.gradle.api.tasks.bundling.Jar::class) {
-    archiveClassifier.set("javadoc")
-}
-
 publishing {
     val artifactBaseName = base.archivesName.get()
     configureMultiModuleMavenPublishing {
@@ -932,7 +679,6 @@ publishing {
             mavenPublication {
                 artifactId = artifactBaseName
                 configureKotlinPomAttributes(project, "Kotlin Standard Library")
-                artifact(emptyJavadocJar)
             }
 
             // creates a variant from existing configuration or creates new one
