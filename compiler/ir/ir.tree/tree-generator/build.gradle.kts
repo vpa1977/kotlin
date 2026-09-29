@@ -1,6 +1,5 @@
 plugins {
     kotlin("jvm")
-    application
 }
 
 val runtimeOnly by configurations
@@ -16,13 +15,8 @@ dependencies {
     runtimeOnly(intellijJDom())
 }
 
-application {
-    mainClass.set("org.jetbrains.kotlin.ir.generator.MainKt")
-}
-
 sourceSets {
     "main" {
         projectDefault()
     }
-    "test" {}
 }
