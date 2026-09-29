@@ -22,12 +22,12 @@ dependencies {
 
 sourceSets {
     "main" { projectDefault() }
-    "test" {}
 }
 
 tasks.withType<KotlinJvmCompile>().configureEach {
     compilerOptions.freeCompilerArgs.add("-Xallow-kotlin-package")
 }
 
-standardPublicJars()
+runtimeJar()
+sourcesJar()
 
