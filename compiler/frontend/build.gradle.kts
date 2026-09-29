@@ -27,7 +27,6 @@ dependencies {
 
 sourceSets {
     "main" { projectDefault() }
-    "test" {}
 }
 
 tasks.withType<KotlinJvmCompile>().configureEach {
