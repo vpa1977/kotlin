@@ -17,7 +17,6 @@ dependencies {
 
 sourceSets {
     "main" { projectDefault() }
-    "test" {}
 }
 
 tasks.named<ProcessResources>("processResources") {
