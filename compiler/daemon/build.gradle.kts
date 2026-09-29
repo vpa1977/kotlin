@@ -19,13 +19,8 @@ optInToExperimentalCompilerApi()
 
 sourceSets {
     "main" { projectDefault() }
-    "test" {}
 }
 
-publish()
-
 runtimeJar()
-sourcesJar()
-javadocJar()
 
 optInToK1Deprecation()
