@@ -1,9 +1,5 @@
 plugins {
     kotlin("jvm")
-    id("d8-configuration")
-    id("java-test-fixtures")
-    id("project-tests-convention")
-    id("test-inputs-check")
 }
 
 dependencies {
@@ -27,63 +23,10 @@ dependencies {
     api(project(":compiler:build-tools:kotlin-build-tools-api"))
     implementation(project(":compiler:build-tools:kotlin-build-tools-cri-impl"))
     compileOnly(intellijCore())
-
-    testFixturesApi(libs.junit4)
-    testFixturesApi(kotlinTest("junit"))
-    testFixturesApi(kotlinStdlib())
-    testFixturesApi(testFixtures(project(":kotlin-build-common")))
-    testFixturesApi(testFixtures(project(":compiler:tests-common")))
-    testFixturesApi(intellijCore())
-    testFixturesApi(commonDependency("org.jetbrains.intellij.deps:log4j"))
-    testFixturesApi(intellijJDom())
-
-    testFixturesImplementation(commonDependency("com.google.code.gson:gson"))
-    testImplementation(commonDependency("com.google.code.gson:gson"))
-    testRuntimeOnly(commonDependency("org.jetbrains.kotlin:kotlin-reflect")) { isTransitive = false }
 }
 
 optInToK1Deprecation()
 
 sourceSets {
     "main" { projectDefault() }
-    "test" {
-        projectDefault()
-        generatedTestDir()
-    }
-    "testFixtures" { projectDefault() }
 }
-projectTests {
-    testTask(parallel = true, jUnitMode = JUnitMode.JUnit4) {
-        useJsIrBoxTests(buildDir = layout.buildDirectory)
-    }
-
-    testTask("testJvmICWithJdk11", parallel = true, jUnitMode = JUnitMode.JUnit4, skipInLocalBuild = false) {
-        useJsIrBoxTests(buildDir = layout.buildDirectory)
-        filter {
-            includeTestsMatching("org.jetbrains.kotlin.incremental.IncrementalK1JvmCompilerRunnerTestGenerated*")
-            includeTestsMatching("org.jetbrains.kotlin.incremental.IncrementalK2JvmCompilerRunnerTestGenerated*")
-        }
-        javaLauncher.set(project.getToolchainLauncherFor(JdkMajorVersion.JDK_11_0))
-    }
-
-    tasks.withType<Test> {
-        workingDir(tasks.processTestResources.map { it.destinationDir }) // to let JUnit Foundation find the empty junit.properties and stop scanning
-        extensions.configure<TestInputsCheckExtension> {
-            with(extraPermissions) {
-                add("permission java.util.PropertyPermission \"kotlin.incremental.compilation\", \"write\";")
-                add("permission java.util.PropertyPermission \"kotlin.incremental.compilation.js\", \"write\";")
-            }
-        }
-    }
-
-    testGenerator("org.jetbrains.kotlin.incremental.TestGeneratorForICTestsKt")
-    testData(project.isolated, "testData")
-    testData(project(":jps:jps-plugin").isolated, "testData")
-    withJsRuntime()
-    withJvmStdlibAndReflect()
-    @OptIn(KotlinCompilerDistUsage::class)
-    withDist()
-    withMockJdkAnnotationsJar()
-}
-
-testsJar()
