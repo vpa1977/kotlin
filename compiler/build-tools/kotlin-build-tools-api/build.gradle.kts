@@ -1,10 +1,7 @@
 import org.gradle.plugins.ide.idea.model.IdeaModel
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm")
-    id("org.jetbrains.kotlinx.binary-compatibility-validator")
-    id("project-tests-convention")
 }
 
 configureKotlinCompileTasksGradleCompatibility()
@@ -14,12 +11,6 @@ dependencies {
     compileOnly(kotlin("stdlib", coreDepsVersion))
     compileOnly(project(":compiler:build-tools:kotlin-build-tools-jdk-utils"))
     embedded(project(":compiler:build-tools:kotlin-build-tools-jdk-utils"))
-    testImplementation(platform(libs.junit.bom))
-    testImplementation(libs.junit.jupiter.api)
-    testRuntimeOnly(libs.junit.jupiter.engine)
-    testRuntimeOnly(libs.junit.platform.launcher)
-    testImplementation(kotlin("stdlib", coreDepsVersion))
-    testImplementation(project(":compiler:build-tools:kotlin-build-tools-jdk-utils"))
 }
 
 kotlin {
@@ -28,22 +19,13 @@ kotlin {
 
 publish()
 
-standardPublicJars()
+runtimeJar()
+sourcesJar()
 
 tasks.compileKotlin {
     compilerOptions {
         freeCompilerArgs.add("-Xjvm-default=all")
     }
-}
-
-tasks.named<KotlinCompile>("compileTestKotlin") {
-    compilerOptions {
-        optIn.add("org.jetbrains.kotlin.buildtools.api.ExperimentalBuildToolsApi")
-    }
-}
-
-projectTests {
-    testTask(jUnitMode = JUnitMode.JUnit5)
 }
 
 generatedSourcesTask(
