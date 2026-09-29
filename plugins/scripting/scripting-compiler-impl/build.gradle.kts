@@ -28,7 +28,6 @@ dependencies {
 
 sourceSets {
     "main" { projectDefault() }
-    "test" { none() }
 }
 
 tasks.withType<KotlinJvmCompile>().configureEach {
@@ -39,4 +38,3 @@ publish()
 
 runtimeJar()
 sourcesJar()
-javadocJar()
