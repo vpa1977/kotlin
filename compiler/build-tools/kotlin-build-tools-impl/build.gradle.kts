@@ -4,7 +4,6 @@ import com.github.jengelman.gradle.plugins.shadow.transformers.DontIncludeResour
 plugins {
     kotlin("jvm")
     id("generated-sources")
-    id("test-inputs-check")
 }
 
 dependencies {
@@ -37,11 +36,6 @@ dependencies {
     embedded(project(":libraries:tools:abi-validation:abi-tools")) { isTransitive = false }
     embedded(project(":kotlin-metadata-jvm")) { isTransitive = false }
     embedded(libs.diff.utils) { isTransitive = false }
-
-
-    testCompileOnly(project(":compiler:cli"))
-    testCompileOnly(intellijPlatformUtil())
-    testImplementation(kotlinTest("junit"))
 }
 
 publish()
@@ -66,7 +60,6 @@ tasks.named<ShadowJar>(EMBEDDABLE_COMPILER_TASK_NAME) {
 }
 
 sourcesJar()
-javadocJar()
 
 kotlin {
     explicitApi()
