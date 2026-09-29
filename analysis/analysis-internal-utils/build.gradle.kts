@@ -11,7 +11,6 @@ dependencies {
 
 sourceSets {
     "main" { projectDefault() }
-    "test" { none() }
 }
 
 kotlin {
