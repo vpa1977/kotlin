@@ -15,11 +15,9 @@ dependencies {
 
 sourceSets {
     "main" { }
-    "test" { }
 }
 
 publish()
 
 runtimeJar(rewriteDefaultJarDepsToShadedCompiler())
 sourcesJar()
-javadocJar()
