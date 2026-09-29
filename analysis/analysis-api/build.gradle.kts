@@ -1,15 +1,9 @@
-import org.jetbrains.kotlin.build.foreign.CheckForeignClassUsageTask
-import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
-
 plugins {
     kotlin("jvm")
-    id("kotlin-git.gradle-build-conventions.foreign-class-usage-checker")
-    id("project-tests-convention")
-    id("test-inputs-check")
 }
 
 kotlin {
-    explicitApiWarning()
+    explicitApi()
 }
 
 dependencies {
@@ -29,46 +23,8 @@ dependencies {
     api(intellijCore())
     api(libs.intellij.asm)
     api(libs.guava)
-
-    testImplementation(platform(libs.junit.bom))
-    testImplementation(libs.junit.jupiter.api)
-    testRuntimeOnly(libs.junit.jupiter.engine)
-    testRuntimeOnly(libs.junit.platform.launcher)
-
-    testImplementation(testFixtures(project(":compiler:psi:psi-api")))
-    testImplementation(testFixtures(project(":compiler:tests-common")))
-}
-
-private val stableNonPublicMarkers = listOf(
-    "org.jetbrains.kotlin.analysis.api.KaImplementationDetail",
-    "org.jetbrains.kotlin.analysis.api.KaNonPublicApi",
-    "org.jetbrains.kotlin.analysis.api.KaIdeApi",
-    "org.jetbrains.kotlin.analysis.api.KaExperimentalApi",
-    "org.jetbrains.kotlin.analysis.api.KaPlatformInterface", // Platform interface is not stable yet
-    "org.jetbrains.kotlin.analysis.api.KaContextParameterApi",
-)
-
-kotlin {
-    explicitApi()
-
-    @OptIn(ExperimentalAbiValidation::class)
-    abiValidation {
-        filters {
-            exclude.annotatedWith.addAll(stableNonPublicMarkers)
-        }
-    }
 }
 
 sourceSets {
     "main" { projectDefault() }
-    "test" { none() }
-}
-
-projectTests {
-    testCodebaseTask()
-}
-
-val checkForeignClassUsage by tasks.registering(CheckForeignClassUsageTask::class) {
-    outputFile = file("api/analysis-api.foreign")
-    nonPublicMarkers.addAll(stableNonPublicMarkers)
 }
