@@ -6,8 +6,6 @@ plugins {
 
 dependencies {
     commonApi(platform(project(":kotlin-gradle-plugins-bom")))
-
-    testImplementation(libs.junit4)
 }
 
 gradlePlugin {
@@ -25,4 +23,12 @@ gradlePlugin {
             }
         }
     }
+}
+
+
+// com.gradle.plugin-publish unconditionally adds a javadocJar to the publication
+// (in afterEvaluate); drop the javadoc variant from the published component.
+afterEvaluate {
+    (components["java"] as org.gradle.api.component.AdhocComponentWithVariants)
+        .withVariantsFromConfiguration(configurations["javadocElements"]) { skip() }
 }
