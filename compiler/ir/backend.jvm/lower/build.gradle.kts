@@ -1,6 +1,5 @@
 plugins {
     kotlin("jvm")
-    id("test-inputs-check")
 }
 
 dependencies {
@@ -9,14 +8,10 @@ dependencies {
     api(project(":compiler:ir.inline"))
     api(project(":compiler:backend.jvm"))
     compileOnly(intellijCore())
-
-    testImplementation(kotlinTest("junit"))
-    testImplementation(testFixtures(project(":compiler:ir.backend.common")))
 }
 
 optInToUnsafeDuringIrConstructionAPI()
 
 sourceSets {
     "main" { projectDefault() }
-    "test" { projectDefault() }
 }
