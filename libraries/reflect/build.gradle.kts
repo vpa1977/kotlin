@@ -307,13 +307,6 @@ val result by task<Jar> {
     )
 }
 
-javadocJar()
-
-dexMethodCount {
-    jarFile.fileProvider(result.map { it.outputs.files.singleFile })
-    ownPackages.set(listOf("kotlin.reflect"))
-}
-
 tasks.named("assemble").configure { dependsOn(result) }
 artifacts {
     add("runtimeElements", result.map { it.outputs.files.singleFile })
