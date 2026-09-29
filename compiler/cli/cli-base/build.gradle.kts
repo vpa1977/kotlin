@@ -30,8 +30,8 @@ dependencies {
 sourceSets {
     "main" {
         projectDefault()
+        java.srcDir("gen")
     }
-    "test" { none() }
 }
 
 optInToExperimentalCompilerApi()
@@ -41,8 +41,6 @@ tasks.jar.configure {
     //excludes unused bunch files
     exclude("META-INF/extensions/*.xml.**")
 }
-
-generatedConfigurationKeys("CLIConfigurationKeys")
 
 generatedSourcesTask(
     taskName = "generateCliArguments",
