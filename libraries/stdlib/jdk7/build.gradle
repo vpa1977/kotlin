@@ -6,14 +6,9 @@ JvmToolchain.configureJvmToolchain(project, JdkMajorVersion.JDK_1_8)
 
 RepoArtifacts.publish(project)
 RepoArtifacts.sourcesJar(project)
-RepoArtifacts.javadocJar(project)
 
 sourceSets {
     main {
-        kotlin {
-        }
-    }
-    test {
         kotlin {
         }
     }
@@ -43,9 +38,6 @@ compileKotlin {
     kotlinOptions.jvmTarget = "1.8"
     kotlinOptions.moduleName = project.name
     kotlinOptions.freeCompilerArgs = [ "-Xjdk-release=7" ]
-}
-
-compileTestKotlin {
 }
 
 LibrariesCommon.configureJava9Compilation(project, 'kotlin.stdlib.jdk7')
