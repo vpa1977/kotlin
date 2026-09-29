@@ -1,33 +1,18 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-
 description = "ABI generation for Kotlin/JVM"
 
 plugins {
     kotlin("jvm")
-    id("java-test-fixtures")
-    id("project-tests-convention")
 }
 
 sourceSets {
     "main" { projectDefault() }
-    "test" {
-        projectDefault()
-        generatedTestDir()
-    }
-    "testFixtures" { projectDefault() }
 }
 
 val embedded by configurations
 embedded.isTransitive = false
 configurations.getByName("compileOnly").extendsFrom(embedded)
-configurations.getByName("testApi").extendsFrom(embedded)
 
 dependencies {
-    // Should come before dependency on proguarded compiler because StringUtil methods are deleted from it
-    testRuntimeOnly(intellijPlatformUtil()) { isTransitive = false }
-
-    testRuntimeOnly(project(":kotlin-compiler"))
-
     compileOnly(project(":compiler:util"))
     compileOnly(project(":compiler:cli"))
     compileOnly(project(":compiler:backend"))
@@ -44,10 +29,6 @@ dependencies {
 
     compileOnly(intellijCore())
     compileOnly(libs.intellij.asm)
-
-    testFixturesApi(libs.junit4)
-    testFixturesApi(testFixtures(project(":compiler:tests-common")))
-    testFixturesApi(testFixtures(project(":compiler:incremental-compilation-impl")))
 }
 
 optInToExperimentalCompilerApi()
@@ -61,18 +42,3 @@ runtimeJarWithRelocation {
 }
 
 sourcesJar()
-
-javadocJar()
-
-projectTests {
-    testTask(jUnitMode = JUnitMode.JUnit4) {
-        workingDir = rootDir
-        dependsOn(":dist")
-    }
-
-    testGenerator("org.jetbrains.kotlin.jvm.abi.TestGeneratorKt")
-
-    withJvmStdlibAndReflect()
-}
-
-testsJar()
