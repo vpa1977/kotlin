@@ -28,7 +28,6 @@ publish()
 
 runtimeJar()
 sourcesJar()
-javadocJar()
 
 tasks.withType<KotlinJvmCompile>().configureEach {
     compilerOptions.optIn.addAll(
