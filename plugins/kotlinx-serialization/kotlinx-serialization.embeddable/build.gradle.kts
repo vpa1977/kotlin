@@ -14,6 +14,3 @@ runtimeJar(rewriteDefaultJarDepsToShadedCompiler())
 sourcesJarWithSourcesFromEmbedded(
     project(":kotlinx-serialization-compiler-plugin").tasks.named<Jar>("sourcesJar")
 )
-javadocJarWithJavadocFromEmbedded(
-    project(":kotlinx-serialization-compiler-plugin").tasks.named<Jar>("javadocJar")
-)
