@@ -30,5 +30,4 @@ optInToUnsafeDuringIrConstructionAPI()
 
 sourceSets {
     "main" { projectDefault() }
-    "test" {}
 }
