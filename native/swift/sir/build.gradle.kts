@@ -27,4 +27,3 @@ publish()
 
 runtimeJar()
 sourcesJar()
-javadocJar()
