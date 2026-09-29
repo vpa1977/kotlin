@@ -1,7 +1,6 @@
 plugins {
     kotlin("jvm")
     id("gradle-plugin-compiler-dependency-configuration")
-    id("generated-sources")
 }
 
 dependencies {
@@ -13,8 +12,9 @@ dependencies {
 }
 
 sourceSets {
-    "main" { projectDefault() }
-    "test" {}
+    "main" {
+        projectDefault()
+        java.srcDir("gen")
+    }
 }
 
-generatedConfigurationKeys("JSConfigurationKeys")
