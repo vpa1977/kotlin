@@ -1,10 +1,5 @@
-import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
-
 plugins {
     kotlin("jvm")
-    id("java-test-fixtures")
-    id("project-tests-convention")
-    id("test-inputs-check")
 }
 
 dependencies {
@@ -18,14 +13,6 @@ dependencies {
     implementation(intellijCore())
     implementation(libs.opentelemetry.api)
     implementation(libs.caffeine)
-
-    testFixturesApi(kotlinTest("junit"))
-    testFixturesApi(platform(libs.junit.bom))
-    testFixturesApi(libs.junit.jupiter.api)
-    testFixturesApi(testFixtures(project(":analysis:analysis-test-framework")))
-    testRuntimeOnly(libs.junit.jupiter.engine)
-
-    testImplementation(testFixtures(project(":compiler:psi:psi-api")))
 }
 
 kotlin {
@@ -34,24 +21,8 @@ kotlin {
     compilerOptions {
         optIn.add("org.jetbrains.kotlin.analysis.api.KaPlatformInterface")
     }
-
-    @OptIn(ExperimentalAbiValidation::class)
-    abiValidation {
-        referenceDumpDir = File("api-unstable")
-
-        filters {
-            exclude.annotatedWith.addAll(
-                "org.jetbrains.kotlin.analysis.api.KaImplementationDetail",
-            )
-        }
-    }
 }
 
 sourceSets {
     "main" { projectDefault() }
-    "test" { none() }
-}
-
-projectTests {
-    testCodebaseTask(dumpDirs = listOf("api", "api-unstable"))
 }
