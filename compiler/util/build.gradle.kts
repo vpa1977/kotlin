@@ -3,8 +3,6 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 plugins {
     kotlin("jvm")
     id("gradle-plugin-compiler-dependency-configuration")
-    id("project-tests-convention")
-    id("test-inputs-check")
 }
 
 dependencies {
@@ -17,11 +15,6 @@ dependencies {
     compileOnly(libs.intellij.asm)
     compileOnly(jpsModel()) { isTransitive = false }
     compileOnly(jpsModelImpl()) { isTransitive = false }
-
-    testImplementation(testFixtures(project(":compiler:tests-common")))
-    testImplementation(intellijCore())
-    testImplementation(platform(libs.junit.bom))
-    testImplementation(libs.junit4)
 }
 
 sourceSets {
@@ -29,17 +22,8 @@ sourceSets {
         projectDefault()
         resources.srcDir(File(rootDir, "resources"))
     }
-    "test" {
-        projectDefault()
-    }
 }
 
 tasks.withType<KotlinJvmCompile>().configureEach {
     compilerOptions.freeCompilerArgs.add("-Xconsistent-data-class-copy-visibility")
-}
-
-testsJar()
-
-projectTests {
-    testTask(jUnitMode = JUnitMode.JUnit4)
 }
