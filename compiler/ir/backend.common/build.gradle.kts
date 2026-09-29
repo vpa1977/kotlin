@@ -1,6 +1,5 @@
 plugins {
     kotlin("jvm")
-    id("java-test-fixtures")
 }
 
 dependencies {
@@ -12,18 +11,11 @@ dependencies {
     implementation(project(":core:compiler.common.native"))
     implementation(project(":compiler:frontend.common-psi")) // required for error reporting
     compileOnly(intellijCore())
-
-    testImplementation(kotlinTest("junit"))
-    testImplementation(testFixtures(project(":compiler:tests-common-new")))
-
-    testFixturesImplementation(kotlinTest("junit"))
 }
 
 optInToUnsafeDuringIrConstructionAPI()
 
 sourceSets {
     "main" { projectDefault() }
-    "test" { projectDefault() }
-    "testFixtures" { projectDefault() }
 }
 
