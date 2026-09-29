@@ -17,5 +17,4 @@ optInTo("org.jetbrains.kotlin.DeprecatedForRemovalCompilerApi")
 
 sourceSets {
     "main" { projectDefault() }
-    "test" {}
 }
