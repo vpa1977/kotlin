@@ -345,6 +345,24 @@ include(
 
 rootProject.name = "kotlin"
 
+// Bootstrap shim projects: no tasks are used from them, but the kotlin-bootstrap
+// settings convention references them for dependency substitution at configuration time.
+include(
+    ":dependencies:bootstrap:kotlin-stdlib-bootstrap",
+    ":dependencies:bootstrap:kotlin-build-tools-api-bootstrap",
+    ":dependencies:bootstrap:kotlin-build-tools-impl-bootstrap",
+    ":dependencies:bootstrap:kotlin-build-tools-compat-bootstrap",
+    ":dependencies:bootstrap:kotlin-build-tools-cri-impl-bootstrap",
+    ":dependencies:bootstrap:kotlin-script-runtime-bootstrap",
+    ":dependencies:bootstrap:kotlin-scripting-common-bootstrap",
+    ":dependencies:bootstrap:kotlin-scripting-jvm-bootstrap",
+    ":dependencies:bootstrap:kotlin-daemon-client-bootstrap",
+    ":dependencies:bootstrap:kotlin-reflect-bootstrap",
+    ":dependencies:bootstrap:kotlin-tooling-core-bootstrap",
+    ":dependencies:bootstrap:kotlin-compiler-embeddable-bootstrap",
+    ":dependencies:bootstrap:kotlin-compiler-runner-bootstrap"
+)
+
 project(":gradle:generators:native-cache-kotlin-version").projectDir = File("$rootDir/libraries/tools/gradle/generators/native-cache-kotlin-version")
 project(":gradle:generators").projectDir = File("$rootDir/libraries/tools/gradle/generators")
 project(":kotlin-stdlib-common").projectDir = File("$rootDir/libraries/stdlib/common")
