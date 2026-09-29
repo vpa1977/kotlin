@@ -14,9 +14,7 @@ dependencies {
 
 sourceSets {
     "main" { projectDefault() }
-    "test" { none() }
 }
 
 runtimeJar()
 sourcesJar()
-javadocJar()
