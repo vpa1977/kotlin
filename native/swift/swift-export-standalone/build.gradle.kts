@@ -1,7 +1,6 @@
 plugins {
     kotlin("jvm")
     id("gradle-plugin-compiler-dependency-configuration")
-    id("project-tests-convention")
 }
 
 description = "Standalone Runner for Swift Export"
@@ -33,4 +32,3 @@ publish()
 
 runtimeJar()
 sourcesJar()
-javadocJar()
