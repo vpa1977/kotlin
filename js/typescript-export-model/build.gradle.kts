@@ -9,7 +9,6 @@ dependencies {
 
 sourceSets {
     "main" { projectDefault() }
-    "test" {}
 }
 
 kotlin {
