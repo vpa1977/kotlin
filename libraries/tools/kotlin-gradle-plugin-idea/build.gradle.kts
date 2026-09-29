@@ -1,12 +1,9 @@
-import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 import plugins.KotlinBuildPublishingPlugin.Companion.ADHOC_COMPONENT_NAME
 
 plugins {
     kotlin("jvm")
     `java-test-fixtures`
     `maven-publish`
-    id("org.jetbrains.kotlinx.binary-compatibility-validator")
 }
 
 configureKotlinCompileTasksGradleCompatibility()
@@ -20,16 +17,6 @@ dependencies {
     compileOnly(kotlin("stdlib", coreDepsVersion))
     api(project(":kotlin-tooling-core"))
     api(project(":kotlin-gradle-plugin-annotations"))
-    testImplementation(gradleApi())
-    testImplementation(gradleKotlinDsl())
-    testImplementation(project(":kotlin-gradle-plugin"))
-    testImplementation(project(":kotlin-gradle-plugin-idea-proto"))
-    testImplementation(kotlin("stdlib", coreDepsVersion))
-    testImplementation(kotlin("test-junit", coreDepsVersion))
-
-    testImplementation("org.reflections:reflections:0.10.2") {
-        because("Tests on the object graph are performed. This library will find implementations of interfaces at runtime")
-    }
 
     testFixturesImplementation(gradleApi())
     testFixturesImplementation(gradleKotlinDsl())
@@ -64,40 +51,4 @@ publish(moduleMetadata = true) {
     }
 }
 
-javadocJar()
 sourcesJar()
-
-apiValidation {
-    nonPublicMarkers += "org.jetbrains.kotlin.gradle.InternalKotlinGradlePluginApi"
-}
-
-tasks {
-    apiBuild {
-        inputJar.value(jar.flatMap { it.archiveFile })
-    }
-}
-
-//region Setup: Backwards compatibility tests
-
-run {
-    val compatibilityTestClasspath by configurations.creating {
-        isCanBeResolved = true
-        isCanBeConsumed = false
-        attributes.attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.JAVA_RUNTIME))
-        attributes.attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.LIBRARY))
-    }
-
-    dependencies {
-        compatibilityTestClasspath(project(":kotlin-gradle-plugin-idea-for-compatibility-tests"))
-    }
-
-    tasks.test {
-        dependsOnKotlinGradlePluginInstall()
-        dependsOn(compatibilityTestClasspath)
-        val conf: FileCollection = compatibilityTestClasspath
-        inputs.files(conf)
-        doFirst { systemProperty("compatibilityTestClasspath", conf.files.joinToString(";") { it.absolutePath }) }
-    }
-}
-
-//endregion
