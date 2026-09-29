@@ -6,7 +6,6 @@ plugins {
 
 sourceSets {
     "main" { projectDefault() }
-    "test" { }
 }
 
 dependencies {
