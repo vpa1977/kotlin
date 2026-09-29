@@ -18,5 +18,4 @@ tasks.withType<KotlinJvmCompile>().configureEach {
 
 sourceSets {
     "main" { projectDefault() }
-    "test" {}
 }
