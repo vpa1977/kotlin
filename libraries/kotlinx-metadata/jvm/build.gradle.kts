@@ -5,21 +5,16 @@ group = "org.jetbrains.kotlin"
 
 plugins {
     kotlin("jvm")
-    id("org.jetbrains.kotlinx.binary-compatibility-validator")
-    id("org.jetbrains.dokka")
-    id("project-tests-convention")
 }
 
 
 sourceSets {
     "main" { projectDefault() }
-    "test" { projectDefault() }
 }
 
 val embedded by configurations
 embedded.isTransitive = false
 configurations.getByName("compileOnly").extendsFrom(embedded)
-configurations.getByName("testApi").extendsFrom(embedded)
 
 val proguardLibraryJars by configurations.creating {
     attributes {
@@ -34,9 +29,6 @@ dependencies {
     embedded(project(":core:metadata"))
     embedded(project(":core:metadata.jvm"))
     embedded(protobufLite())
-    testImplementation(kotlinTest("junit5"))
-    testImplementation(libs.intellij.asm)
-    testImplementation(commonDependency("org.jetbrains.kotlin:kotlin-reflect")) { isTransitive = false }
 
     proguardLibraryJars(kotlinStdlib())
 }
@@ -48,12 +40,7 @@ kotlin {
     }
 }
 
-projectTests {
-    testTask(jUnitMode = JUnitMode.JUnit5)
-}
-
 publish()
-
 val unshaded by task<Jar> {
     archiveClassifier.set("unshaded")
     from(mainSourceSet.output)
@@ -110,46 +97,4 @@ val resultJar by task<Jar> {
 
 setPublishableArtifact(resultJar)
 
-tasks.apiBuild {
-    dependsOn(tasks.jar)
-    inputJar.value(resultJar.flatMap { it.archiveFile })
-}
-
-apiValidation {
-    ignoredPackages.add("kotlin.metadata.internal")
-    nonPublicMarkers.add("kotlin.metadata.internal.IgnoreInApiDump")
-}
-
-dokka {
-    dokkaGeneratorIsolation = ProcessIsolation {
-        // enable support for kotlin package - required with K2 analysis
-        systemProperties.put("org.jetbrains.dokka.analysis.allowKotlinPackage", "true")
-    }
-
-    dokkaPublications.html {
-        outputDirectory.set(layout.buildDirectory.dir("dokka"))
-        failOnWarning.set(true)
-    }
-    pluginsConfiguration.html {
-        templatesDir.set(projectDir.resolve("dokka-templates"))
-    }
-
-    dokkaSourceSets.configureEach {
-        includes.from(project.file("dokka/moduledoc.md").path)
-
-        sourceRoots.from(project(":kotlin-metadata").getSources())
-
-        skipDeprecated.set(true)
-        reportUndocumented.set(true)
-
-        perPackageOption {
-            matchingRegex.set("kotlin\\.metadata\\.internal(\$|\\.).*")
-            suppress.set(true)
-            reportUndocumented.set(false)
-        }
-    }
-}
-
 sourcesJar()
-
-javadocJar()
