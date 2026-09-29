@@ -1,6 +1,5 @@
 plugins {
     kotlin("jvm")
-    id("java-test-fixtures")
 }
 
 dependencies {
@@ -13,12 +12,6 @@ dependencies {
     implementation(project(":core:compiler.common.jvm"))
 
     api(intellijCore())
-
-    testFixturesApi(testFixtures(project(":compiler:tests-common")))
-    testFixturesApi(testFixtures(project(":compiler:tests-common-new")))
-    testFixturesApi(testFixtures(project(":analysis:analysis-test-framework")))
-    testFixturesApi(libs.junit.jupiter.api)
-    testRuntimeOnly(libs.junit.vintage.engine)
 }
 
 sourceSets {
