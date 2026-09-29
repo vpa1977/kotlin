@@ -2,10 +2,6 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 plugins {
     kotlin("jvm")
-    id("java-test-fixtures")
-    id("project-tests-convention")
-    id("test-data-manager")
-    id("test-inputs-check")
 }
 
 dependencies {
@@ -29,8 +25,6 @@ dependencies {
     implementation(project(":native:native.config"))
     implementation(project(":analysis:decompiled:decompiler-to-file-stubs"))
     implementation(project(":analysis:decompiled:decompiler-to-psi"))
-    testFixturesApi(project(":analysis:analysis-api-fir"))
-    testFixturesImplementation(project(":native:native.config"))
 
     implementation(project(":compiler:frontend.common"))
     implementation(project(":compiler:fir:entrypoint"))
@@ -47,42 +41,10 @@ dependencies {
     implementation(libs.opentelemetry.api)
 
     api(intellijCore())
-
-    testFixturesApi(testFixtures(project(":compiler:test-infrastructure-utils")))
-    testFixturesApi(testFixtures(project(":compiler:test-infrastructure")))
-    testFixturesApi(testFixtures(project(":compiler:tests-common-new")))
-
-    testFixturesApi(libs.opentest4j)
-    testFixturesApi(project(":analysis:analysis-api-standalone:analysis-api-fir-standalone-base"))
-    testFixturesCompileOnly(toolsJarApi())
-    testRuntimeOnly(toolsJar())
-    testFixturesApi(testFixtures(project(":compiler:tests-common")))
-    testFixturesApi(testFixtures(project(":compiler:fir:analysis-tests:legacy-fir-tests")))
-    testFixturesApi(testFixtures(project(":analysis:analysis-test-framework")))
-    testFixturesApi(testFixtures(project(":analysis:analysis-api-impl-base")))
-    testFixturesApi(testFixtures(project(":compiler:fir:raw-fir:psi2fir")))
-    testFixturesApi(kotlinTest("junit"))
-    testFixturesApi(platform(libs.junit.bom))
-    testFixturesApi(libs.junit.jupiter.api)
-    testRuntimeOnly(libs.junit.jupiter.engine)
-    testFixturesApi(project(":analysis:symbol-light-classes"))
-    testFixturesApi(testFixtures(project(":plugins:scripting:scripting-tests")))
-    testFixturesApi(project(":kotlin-scripting-common"))
-    testFixturesImplementation(testFixtures(project(":analysis:decompiled:decompiler-to-psi")))
-    testFixturesImplementation(testFixtures(project(":compiler:tests-spec")))
-
-    // We use 'api' instead of 'implementation' because other modules might be using these jars indirectly
-    testFixturesApi(project(":plugins:plugin-sandbox"))
-    testFixturesApi(testFixtures(project(":plugins:plugin-sandbox")))
 }
 
 sourceSets {
     "main" { projectDefault() }
-    "test" {
-        projectDefault()
-        generatedTestDir()
-    }
-    "testFixtures" { projectDefault() }
 }
 
 kotlin {
@@ -93,52 +55,6 @@ kotlin {
             "org.jetbrains.kotlin.analysis.api.KaSpiExtensionPoint",
         )
     }
-}
-
-projectTests {
-    testTask(
-        jUnitMode = JUnitMode.JUnit5,
-        defineJDKEnvVariables = listOf(
-            JdkMajorVersion.JDK_11_0, // TestsWithJava11 and others
-            JdkMajorVersion.JDK_17_0, // TestsWithJava17 and others
-            JdkMajorVersion.JDK_21_0  // TestsWithJava21 and others
-        )
-    ) {
-        extensions.configure<TestInputsCheckExtension> {
-            allowFlightRecorder = true
-        }
-
-        if (!kotlinBuildProperties.isTeamcityBuild.get()) {
-            // Ensure golden tests run first since some LL tests are complementary for the surface tests
-            mustRunAfter(":analysis:analysis-api-fir:test")
-        }
-    }
-
-    testGenerator("org.jetbrains.kotlin.analysis.low.level.api.fir.TestGeneratorKt")
-
-    testData(project.isolated, "testData")
-
-    val analysisApiProject = project(":analysis:analysis-api").isolated
-    testData(analysisApiProject, "testData/components/compilerFacility/compilation/codeFragments/capturing")
-    testData(analysisApiProject, "testData/components/resolver")
-    testData(analysisApiProject, "testData/sessions/sessionInvalidation")
-
-    withJvmStdlibAndReflect()
-    withJvmStdlibSources()
-    withStdlibCommon()
-    withJsRuntime()
-    withWasmRuntime()
-    withTestJar()
-    withAnnotations()
-    withMockJdkRuntime()
-    withMockJdkAnnotationsJar()
-    withScriptRuntime()
-    withScriptingPlugin()
-    withTestScriptDefinition()
-    withPluginSandboxAnnotations()
-
-    @OptIn(KotlinCompilerDistUsage::class)
-    withDist()
 }
 
 allprojects {
@@ -152,21 +68,6 @@ allprojects {
                 "org.jetbrains.kotlin.analysis.api.KaExperimentalApi",
                 "org.jetbrains.kotlin.analysis.api.KaContextParameterApi",
             )
-        )
-    }
-}
-
-testsJar()
-
-tasks.register("analysisLowLevelApiFirAllTests") {
-    dependsOn(
-        ":analysis:low-level-api-fir:check",
-        ":analysis:low-level-api-fir:low-level-api-fir-compiler-tests:check",
-    )
-
-    if (kotlinBuildProperties.isKotlinNativeEnabled.get()) {
-        dependsOn(
-            ":analysis:low-level-api-fir:low-level-api-fir-native-compiler-tests:check",
         )
     }
 }
