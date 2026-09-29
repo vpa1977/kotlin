@@ -1,5 +1,3 @@
-import org.gradle.jvm.tasks.Jar
-
 description = "ABI generation for Kotlin/JVM (for using with embeddable compiler)"
 
 plugins {
@@ -15,5 +13,3 @@ publish()
 runtimeJar(rewriteDefaultJarDepsToShadedCompiler())
 
 sourcesJar()
-
-javadocJar()
