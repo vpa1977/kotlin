@@ -1,6 +1,5 @@
 plugins {
     kotlin("jvm")
-    id("java-test-fixtures")
 }
 
 sourceSets {
@@ -19,12 +18,6 @@ dependencies {
     implementation(project(":js:js.serializer"))
 
     compileOnly(intellijCore())
-
-    testFixturesApi(platform(libs.junit.bom))
-    testFixturesApi(libs.junit4)
-    testFixturesApi(testFixtures(project(":compiler:tests-common")))
-    testFixturesApi(testFixtures(project(":compiler:tests-common-new")))
-    testFixturesApi(testFixtures(project(":analysis:decompiled:decompiler-to-file-stubs")))
 }
 
 optInToK1Deprecation()
