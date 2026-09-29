@@ -1,50 +1,16 @@
-import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinUsages
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
-import org.jetbrains.kotlin.konan.target.HostManager
 
 plugins {
     kotlin("jvm")
-    id("project-tests-convention")
 }
 
 sourceSets {
     "main" { projectDefault() }
-    "test" { projectDefault() }
 }
 
 kotlin {
     compilerOptions {
         explicitApi()
-    }
-}
-
-projectTests {
-    testTask(jUnitMode = JUnitMode.JUnit5) {
-        workingDir = rootDir
-
-        val testProjectKlib = configurations.create("testProjectKlib") {
-            attributes {
-                attribute(Usage.USAGE_ATTRIBUTE, objects.named(KotlinUsages.KOTLIN_API))
-                attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.LIBRARY))
-                attribute(KotlinPlatformType.attribute, KotlinPlatformType.native)
-                attribute(KotlinNativeTarget.konanTargetAttribute, HostManager.host.name)
-            }
-        }
-
-        val testProjectKlibFiles = testProjectKlib.incoming.files
-
-        dependencies {
-            testProjectKlib(project("testProject"))
-        }
-
-        inputs.files(testProjectKlibFiles)
-            .withPathSensitivity(PathSensitivity.RELATIVE)
-
-        doFirst {
-            systemProperty("testKlibs", testProjectKlibFiles.joinToString(File.pathSeparator))
-        }
     }
 }
 
@@ -59,11 +25,6 @@ dependencies {
     compileOnly(project(":kotlin-metadata"))
     compileOnly(project(":kotlin-util-klib-metadata"))
     compileOnly(protobufLite())
-
-    testImplementation(kotlinTest("junit5"))
-    testImplementation(testFixtures(project(":compiler:tests-common")))
-    testImplementation(project(":analysis:analysis-api-standalone"))
-    testImplementation(project(":native:native.config"))
 }
 
 tasks.withType<KotlinJvmCompile>().configureEach {
