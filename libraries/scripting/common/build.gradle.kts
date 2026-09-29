@@ -9,12 +9,10 @@ project.updateJvmTarget("1.8")
 dependencies {
     api(kotlinStdlib())
     compileOnly(commonDependency("org.jetbrains.kotlin:kotlin-reflect")) { isTransitive = false }
-    testImplementation(libs.junit4)
 }
 
 sourceSets {
     "main" { projectDefault() }
-    "test" { projectDefault() }
 }
 
 tasks.withType<KotlinJvmCompile>().configureEach {
@@ -25,4 +23,3 @@ publish()
 
 runtimeJar()
 sourcesJar()
-javadocJar()
