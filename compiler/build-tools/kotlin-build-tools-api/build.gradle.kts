@@ -1,4 +1,3 @@
-import org.gradle.plugins.ide.idea.model.IdeaModel
 
 plugins {
     kotlin("jvm")
@@ -131,10 +130,6 @@ fun Project.generatedSourcesTask(
         }
     }
 
-    apply(plugin = "idea")
-    (this as ExtensionAware).extensions.configure<IdeaModel>("idea") {
-        this.module.generatedSourceDirs.add(generationRoot.asFile)
-    }
     return task
 }
 
