@@ -8,7 +8,6 @@ import org.gradle.api.Project
 import org.gradle.api.artifacts.ResolvableConfiguration
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.Directory
-import org.gradle.api.plugins.ExtensionAware
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.tasks.JavaExec
 import org.gradle.api.tasks.PathSensitivity
