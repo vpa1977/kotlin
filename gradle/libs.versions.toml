@@ -22,7 +22,6 @@ proguard = "7.4.2"
 ktor = "3.1.3"
 kotlinx-bcv = "0.17.0"
 gson = "2.11.0"
-jetbrains-ideaExt = "1.0.1"
 jackson = "2.21.1"
 jgit = "7.3.0.202506031305-r"
 jsoup = "1.17.2"
@@ -133,9 +132,8 @@ gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
 guava-failureaccess = { module = "com.google.guava:failureaccess", version.ref = "failureaccess" }
 vavr = { module = "io.vavr:vavr", version.ref = "vavr" }
-jetbrains-ideaExt-gradlePlugin = { module = "gradle.plugin.org.jetbrains.gradle.plugin.idea-ext:gradle-idea-ext", version.ref = "jetbrains-ideaExt" }
-jgit = { module = "org.eclipse.jgit:org.eclipse.jgit", version.ref = "jgit" }
 jsoup = { module = "org.jsoup:jsoup", version.ref = "jsoup" }
+jgit = { module = "org.eclipse.jgit:org.eclipse.jgit", version.ref = "jgit" }
 junit4 = { module = "junit:junit", version.ref = "junit4" }
 junit-bom = { module = "org.junit:junit-bom", version.ref = "junit5" }
 junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit5" }
