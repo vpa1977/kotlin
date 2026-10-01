@@ -5,7 +5,6 @@ import java.io.FileOutputStream
 plugins {
     kotlin("multiplatform")
     alias(libs.plugins.gradle.node)
-    idea
     id("nodejs-cache-redirector-configuration")
 }
 
@@ -14,10 +13,6 @@ description = "Kotlin-test integration tests for JS"
 node {
     version.set(nodejsVersion)
     download.set(true)
-}
-
-idea {
-    module.excludeDirs.add(file("node_modules"))
 }
 
 kotlin {
