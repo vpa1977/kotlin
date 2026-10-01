@@ -1,7 +1,5 @@
 import org.gradle.api.Project
 import org.gradle.api.tasks.SourceSet
-import org.gradle.kotlin.dsl.apply
-import org.jetbrains.kotlin.ideaExt.idea
 
 val SourceSet.generatedDir: Project.() -> Unit
     get() = {

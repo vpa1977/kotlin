@@ -101,8 +101,6 @@ dependencies {
     implementation(libs.shadow.gradlePlugin)
     implementation(libs.proguard.gradlePlugin)
 
-    implementation(libs.jetbrains.ideaExt.gradlePlugin)
-
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.cio)
 
