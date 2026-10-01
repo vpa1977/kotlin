@@ -1,5 +1,4 @@
 import gradle.GradlePluginVariant
-import org.gradle.plugins.ide.idea.model.IdeaModel
 
 plugins {
     id("gradle-plugin-dependency-configuration")
@@ -155,10 +154,6 @@ fun Project.generatedSourcesTask(
         java.srcDirs(dependency)
     }
 
-    apply(plugin = "idea")
-    (this as ExtensionAware).extensions.configure<IdeaModel>("idea") {
-        this.module.generatedSourceDirs.add(generationRoot.asFile)
-    }
     return task
 }
 
