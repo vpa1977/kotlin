@@ -15,7 +15,6 @@ import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.*
 import org.gradle.kotlin.dsl.getByType
-import org.gradle.plugins.ide.idea.model.IdeaModel
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 fun Project.generatedDiagnosticContainersAndCheckerComponents(): TaskProvider<JavaExec> {
@@ -136,10 +135,6 @@ fun Project.generatedSourcesTask(
         }
     }
 
-    apply(plugin = "idea")
-    (this as ExtensionAware).extensions.configure<IdeaModel>("idea") {
-        this.module.generatedSourceDirs.add(generationRoot.asFile)
-    }
     return task
 }
 
