@@ -4,10 +4,9 @@ import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.SourceSetContainer
-import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.get
+import org.gradle.kotlin.dsl.getByName
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetContainer
-import org.jetbrains.kotlin.ideaExt.idea
 
 inline fun Project.sourceSets(crossinline body: SourceSetsBuilder.() -> Unit) = SourceSetsBuilder(this).body()
 
@@ -82,12 +81,6 @@ fun Project.sources() = mainJavaPluginSourceSet()?.allSource ?: mainKotlinSource
 
 fun SourceSet.generatedDir(project: Project, generationRoot: Provider<Directory>) {
     java.srcDir(generationRoot)
-
-    // This is needed until IDEA fixes IDEA-339729
-    project.apply(plugin = "idea")
-    project.idea {
-        this.module.generatedSourceDirs.add(generationRoot.get().asFile)
-    }
 }
 
 fun SourceSet.codebaseTestDir(project: Project, srcPath: Any) {
@@ -96,9 +89,4 @@ fun SourceSet.codebaseTestDir(project: Project, srcPath: Any) {
     val mainSourceSet = project.sourceSets["main"]
     compileClasspath += mainSourceSet.output + project.configurations["testCompileClasspath"]
     runtimeClasspath += mainSourceSet.output + project.configurations["testRuntimeClasspath"]
-
-    project.apply(plugin = "idea")
-    project.idea {
-        module.testSources.from(allJava.sourceDirectories)
-    }
 }

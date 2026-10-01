@@ -28,7 +28,6 @@ dependencies {
     compileOnly(gradleKotlinDsl())
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:${project.bootstrapKotlinVersion}")
     implementation("org.jetbrains.kotlin:kotlin-build-gradle-plugin:${kotlinBuildProperties.buildGradlePluginVersion.get()}")
-    api(libs.jetbrains.ideaExt.gradlePlugin)
 }
 
 project.configurations.named(org.jetbrains.kotlin.gradle.plugin.PLUGIN_CLASSPATH_CONFIGURATION_NAME + "Main") {
