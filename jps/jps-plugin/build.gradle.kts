@@ -1,6 +1,5 @@
 
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.ideaExt.idea
 
 plugins {
     kotlin("jvm")
@@ -91,11 +90,6 @@ sourceSets {
             java.srcDirs("jps-tests/tests-gen")
         }
     }
-}
-
-apply(plugin = "idea")
-idea {
-    this.module.generatedSourceDirs.add(projectDir.resolve("jps-tests").resolve("tests-gen"))
 }
 
 java {
