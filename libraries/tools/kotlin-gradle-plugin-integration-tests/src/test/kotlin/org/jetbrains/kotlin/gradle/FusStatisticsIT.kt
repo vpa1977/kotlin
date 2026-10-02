@@ -48,120 +48,6 @@ class FusStatisticsIT : KGPBaseTest() {
     private val GradleProject.fusStatisticsDirectory: Path
         get() = projectPath.resolve("kotlin-profile")
 
-    @JvmGradlePluginTests
-    @DisplayName("for dokka")
-    @GradleTest
-    @GradleTestVersions(
-        additionalVersions = [TestVersions.Gradle.G_8_0, TestVersions.Gradle.G_8_2],
-    )
-    fun testDokka(gradleVersion: GradleVersion) {
-        project(
-            "simpleProject",
-            gradleVersion,
-            // TODO: KT-70336 dokka doesn't support Configuration Cache
-            buildOptions = defaultBuildOptions.copy(configurationCache = BuildOptions.ConfigurationCacheValue.DISABLED)
-        ) {
-            assertNoErrorFilesCreated {
-                applyDokka(TestVersions.ThirdPartyDependencies.DOKKA)
-                build("compileKotlin", "dokkaHtml", "-Pkotlin.session.logger.root.path=$projectPath") {
-                    assertOutputDoesNotContainFusErrors()
-                    fusStatisticsDirectory.assertFusReportContains(
-                        "ENABLED_DOKKA",
-                        "ENABLED_DOKKA_HTML"
-                    )
-                }
-            }
-        }
-    }
-
-    @JvmGradlePluginTests
-    @DisplayName("for dokka v2 html doc")
-    @GradleTest
-    @GradleTestVersions(
-        additionalVersions = [TestVersions.Gradle.G_8_0, TestVersions.Gradle.G_8_2],
-    )
-    fun testDokkaV2HtmlDoc(gradleVersion: GradleVersion) {
-        val expectedDokkaFusMetrics = arrayOf(
-            "ENABLED_DOKKA",
-            "ENABLE_DOKKA_GENERATE_TASK",
-            "ENABLE_DOKKA_GENERATE_PUBLICATION_HTML_TASK",
-            "ENABLE_LINK_DOKKA_GENERATE_TASK"
-        )
-        testDokkaPlugin(gradleVersion, "org.jetbrains.dokka", expectedDokkaFusMetrics)
-    }
-
-    @JvmGradlePluginTests
-    @DisplayName("for dokka v2 javadoc")
-    @GradleTest
-    @GradleTestVersions(
-        additionalVersions = [TestVersions.Gradle.G_8_0, TestVersions.Gradle.G_8_2],
-    )
-    fun testDokkaV2Javadoc(gradleVersion: GradleVersion) {
-        val expectedDokkaFusMetrics = arrayOf(
-            "ENABLED_DOKKA_JAVADOC",
-            "ENABLE_DOKKA_GENERATE_TASK",
-            "ENABLE_DOKKA_GENERATE_PUBLICATION_JAVADOC_TASK",
-        )
-        testDokkaPlugin(gradleVersion, "org.jetbrains.dokka-javadoc", expectedDokkaFusMetrics)
-    }
-
-    private fun testDokkaPlugin(gradleVersion: GradleVersion, pluginName: String, expectedDokkaFusMetrics: Array<String>) {
-        project("simpleProject", gradleVersion) {
-            assertNoErrorFilesCreated {
-                settingsGradle.replaceText(
-                    "repositories {",
-                    """
-                    repositories {
-                         maven { url = "https://redirector.kotlinlang.org/maven/dokka-dev" }
-                """.trimIndent()
-                )
-
-                //for templating-plugin and dokka-base plugins
-                buildGradle.replaceText(
-                    "repositories {",
-                    """
-                    repositories {
-                         maven { url = "https://redirector.kotlinlang.org/maven/dokka-dev" }
-                """.trimIndent()
-                )
-
-                //apply Dokka plugins
-                buildGradle.replaceText(
-                    "plugins {",
-                    """
-                plugins {
-                    id("$pluginName") version "${TestVersions.ThirdPartyDependencies.DOKKA_V2}"
-                """.trimIndent()
-                )
-
-                build(
-                    "compileKotlin",
-                    "dokkaGenerate",
-                    "-Porg.jetbrains.dokka.experimental.gradle.pluginMode=V2Enabled",
-                    "-Pkotlin.session.logger.root.path=$projectPath",
-                ) {
-                    assertConfigurationCacheStored()
-                    assertOutputDoesNotContainFusErrors()
-                    fusStatisticsDirectory.assertFusReportContains(*expectedDokkaFusMetrics)
-                }
-
-                projectPath.resolve("kotlin-profile").deleteRecursively()
-                build("clean")
-
-                build(
-                    "compileKotlin",
-                    "dokkaGenerate",
-                    "-Porg.jetbrains.dokka.experimental.gradle.pluginMode=V2Enabled",
-                    "-Pkotlin.session.logger.root.path=$projectPath"
-                ) {
-                    assertConfigurationCacheReused()
-                    assertOutputDoesNotContainFusErrors()
-                    fusStatisticsDirectory.assertFusReportContains(*expectedDokkaFusMetrics)
-                }
-            }
-        }
-    }
-
     @NativeGradlePluginTests
     @DisplayName("Verify that the metric for applying the Cocoapods plugin is being collected")
     @GradleTest
@@ -214,8 +100,8 @@ class FusStatisticsIT : KGPBaseTest() {
                 build("assemble", "-Pkotlin.session.logger.root.path=$projectPath") {
                     assertOutputDoesNotContainFusErrors()
                     fusStatisticsDirectory.assertFusReportContains(*expectedMetrics)
-                    // asserts that we do not put DOKKA metrics everywhere just in case
-                    fusStatisticsDirectory.assertFusReportDoesNotContain("ENABLED_DOKKA_HTML", "KOTLIN_JS_PLUGIN_ENABLED")
+                    // asserts that we do not put plugin metrics everywhere just in case
+                    fusStatisticsDirectory.assertFusReportDoesNotContain("KOTLIN_JS_PLUGIN_ENABLED")
                 }
             }
         }
@@ -825,16 +711,6 @@ class FusStatisticsIT : KGPBaseTest() {
                 assertOutputDoesNotContainFusErrors()
             }
         }
-    }
-
-    private fun TestProject.applyDokka(version: String) {
-        buildGradle.replaceText(
-            "plugins {",
-            """
-            plugins {
-                id("org.jetbrains.dokka") version "$version"
-            """.trimIndent()
-        )
     }
 
 }
