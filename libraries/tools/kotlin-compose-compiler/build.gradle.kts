@@ -3,7 +3,6 @@ import gradle.GradlePluginVariant
 plugins {
     id("gradle-plugin-common-configuration")
     `jvm-test-suite`
-    id("gradle-plugin-api-reference")
 }
 
 repositories {
@@ -27,22 +26,6 @@ gradlePlugin {
             displayName = "Compose Compiler Gradle plugin"
             description = displayName
             implementationClass = "org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradleSubplugin"
-        }
-    }
-}
-
-pluginApiReference {
-    enableForAllGradlePluginVariants()
-    failOnWarning = true
-
-    additionalDokkaConfiguration {
-        dokkaSourceSets.configureEach {
-            includes.from("api-reference-description.md")
-            reportUndocumented.set(true)
-            perPackageOption {
-                matchingRegex.set("org\\.jetbrains\\.kotlin\\.compose\\.compiler\\.gradle\\.model(\$|\\.).*")
-                suppress.set(true)
-            }
         }
     }
 }
