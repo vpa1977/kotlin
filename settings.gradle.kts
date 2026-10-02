@@ -142,13 +142,10 @@ include(
     ":compiler:ir.actualization",
     ":compiler:ir.serialization.common",
     ":compiler:ir.serialization.jvm",
-    ":compiler:ir.serialization.js",
     ":compiler:ir.serialization.native",
     ":compiler:ir.interpreter",
     ":compiler:ir.inline",
     ":compiler:ir.validation",
-    ":compiler:backend.js",
-    ":compiler:backend.wasm",
     ":compiler:backend.jvm",
     ":compiler:backend.jvm.lower",
     ":compiler:backend.jvm.codegen",
@@ -161,17 +158,8 @@ include(
     ":compiler:cli-base",
     ":compiler:cli",
     ":compiler:cli-jvm",
-    ":compiler:cli-js",
     ":compiler:cli-metadata",
     ":compiler:incremental-compilation-impl",
-    ":js:js.ast",
-    ":js:js.sourcemap",
-    ":js:js.serializer",
-    ":js:js.parser",
-    ":js:js.config",
-    ":js:js.frontend.common",
-    ":js:js.frontend",
-    ":js:js.translator",
     ":native:kotlin-native-utils",
     ":native:frontend.native",
     ":native:kotlin-klib-commonizer-api",
@@ -188,7 +176,6 @@ include(
     ":core:compiler.common.jvm",
     ":core:compiler.common.js",
     ":core:compiler.common.native",
-    ":core:compiler.common.wasm",
     ":core:compiler.common.web",
     ":compiler:backend.common.jvm",
     ":core:descriptors",
@@ -209,6 +196,8 @@ include(
     ":kotlin-power-assert-compiler-plugin.frontend",
     ":kotlin-power-assert-compiler-plugin.backend",
     ":kotlin-power-assert-compiler-plugin.cli",
+    ":js:js.config",
+    ":wasm:wasm.config",
     ":kotlin-sam-with-receiver-compiler-plugin",
     ":kotlin-sam-with-receiver-compiler-plugin.embeddable",
     ":kotlin-sam-with-receiver-compiler-plugin.common",
@@ -261,10 +250,6 @@ include(
     ":kotlin-scripting-compiler-impl-embeddable",
     ":plugins:jvm-abi-gen",
     ":plugins:jvm-abi-gen-embeddable",
-    ":wasm:wasm.ir",
-    ":wasm:wasm.frontend",
-    ":wasm:wasm.config",
-    ":wasm:wasm.debug.browsers",
     ":libraries:tools:abi-validation:abi-tools",
     ":libraries:tools:abi-validation:abi-tools-api",
     ":libraries:tools:analysis-api-based-klib-reader",
@@ -283,14 +268,10 @@ include(
     ":compiler:fir:fir-serialization",
     ":compiler:fir:fir-deserialization",
     ":compiler:fir:fir-jvm",
-    ":compiler:fir:fir-js",
     ":compiler:fir:fir-native",
     ":compiler:fir:checkers",
     ":compiler:fir:checkers:checkers.jvm",
-    ":compiler:fir:checkers:checkers.js",
     ":compiler:fir:checkers:checkers.native",
-    ":compiler:fir:checkers:checkers.wasm",
-    ":compiler:fir:checkers:checkers.web.common",
     ":compiler:fir:checkers:checkers-component-generator",
     ":compiler:fir:diagnostic-renderers",
     ":compiler:fir:entrypoint",
@@ -316,8 +297,6 @@ include(
     ":native:swift:sir-printer",
     ":native:swift:sir-providers",
     ":native:swift:swift-export-standalone",
-    ":js:typescript-export-model",
-    ":js:typescript-printer",
     ":analysis:low-level-api-fir",
     ":analysis:analysis-api-fir:analysis-api-fir-generator",
     ":analysis:analysis-api-fir",
@@ -334,13 +313,32 @@ include(
     ":analysis:decompiled:decompiler-to-psi",
     ":analysis:decompiled:decompiler-to-stubs",
     ":analysis:decompiled:decompiler-to-file-stubs",
-    ":analysis:decompiled:decompiler-js",
     ":analysis:decompiled:decompiler-native",
     ":analysis:decompiled:light-classes-for-decompiled",
     ":kotlin-stdlib-common",
     ":kotlin-stdlib",
     ":kotlin-stdlib-jdk7",
-    ":kotlin-stdlib-jdk8"
+    ":kotlin-stdlib-jdk8",
+    ":compiler:backend.js",
+    ":compiler:backend.wasm",
+    ":compiler:cli-js",
+    ":compiler:ir.serialization.js",
+    ":core:compiler.common.wasm",
+    ":compiler:fir:fir-js",
+    ":compiler:fir:checkers:checkers.js",
+    ":compiler:fir:checkers:checkers.wasm",
+    ":compiler:fir:checkers:checkers.web.common",
+    ":js:js.ast",
+    ":js:js.frontend",
+    ":js:js.frontend.common",
+    ":js:js.parser",
+    ":js:js.serializer",
+    ":js:js.sourcemap",
+    ":js:js.translator",
+    ":js:typescript-export-model",
+    ":js:typescript-printer",
+    ":wasm:wasm.frontend",
+    ":wasm:wasm.ir",
 )
 
 rootProject.name = "kotlin"
@@ -380,7 +378,6 @@ project(":kotlin-preloader").projectDir = File("$rootDir/compiler/preloader")
 project(":kotlin-build-common").projectDir = File("$rootDir/build-common")
 project(":compiler:cli-base").projectDir = File("$rootDir/compiler/cli/cli-base")
 project(":compiler:cli-jvm").projectDir = File("$rootDir/compiler/cli/cli-jvm")
-project(":compiler:cli-js").projectDir = File("$rootDir/compiler/cli/cli-js")
 project(":compiler:cli-metadata").projectDir = File("$rootDir/compiler/cli/cli-metadata")
 project(":kotlin-daemon").projectDir = File("$rootDir/compiler/daemon")
 project(":daemon-common").projectDir = File("$rootDir/compiler/daemon/daemon-common")
@@ -396,16 +393,17 @@ project(":compiler:ir.backend.native").projectDir = File("$rootDir/compiler/ir/b
 project(":compiler:ir.actualization").projectDir = File("$rootDir/compiler/ir/ir.actualization")
 project(":compiler:ir.inline").projectDir = File("$rootDir/compiler/ir/ir.inline")
 project(":compiler:ir.validation").projectDir = File("$rootDir/compiler/ir/ir.validation")
-project(":compiler:backend.js").projectDir = File("$rootDir/compiler/ir/backend.js")
-project(":compiler:backend.wasm").projectDir = File("$rootDir/compiler/ir/backend.wasm")
 project(":compiler:backend.jvm").projectDir = File("$rootDir/compiler/ir/backend.jvm")
+project(":core:compiler.common.js").projectDir = File("$rootDir/core/compiler.common.js")
+project(":core:compiler.common.web").projectDir = File("$rootDir/core/compiler.common.web")
 project(":compiler:backend.jvm.lower").projectDir = File("$rootDir/compiler/ir/backend.jvm/lower")
 project(":compiler:backend.jvm.codegen").projectDir = File("$rootDir/compiler/ir/backend.jvm/codegen")
 project(":compiler:backend.jvm.entrypoint").projectDir = File("$rootDir/compiler/ir/backend.jvm/entrypoint")
 project(":compiler:ir.serialization.common").projectDir = File("$rootDir/compiler/ir/serialization.common")
 project(":compiler:ir.serialization.jvm").projectDir = File("$rootDir/compiler/ir/serialization.jvm")
-project(":compiler:ir.serialization.js").projectDir = File("$rootDir/compiler/ir/serialization.js")
 project(":compiler:ir.serialization.native").projectDir = File("$rootDir/compiler/ir/serialization.native")
+project(":js:js.config").projectDir = File("$rootDir/js/js.config")
+project(":wasm:wasm.config").projectDir = File("$rootDir/wasm/wasm.config")
 project(":compiler:ir.interpreter").projectDir = File("$rootDir/compiler/ir/ir.interpreter")
 project(":kotlin-util-io").projectDir = File("$rootDir/compiler/util-io")
 project(":kotlin-util-klib").projectDir = File("$rootDir/compiler/util-klib")
@@ -464,3 +462,7 @@ project(":kotlinx-serialization-compiler-plugin.backend").projectDir = File("$ro
 project(":kotlinx-serialization-compiler-plugin.k1").projectDir = File("$rootDir/plugins/kotlinx-serialization/kotlinx-serialization.k1")
 project(":kotlinx-serialization-compiler-plugin.k2").projectDir = File("$rootDir/plugins/kotlinx-serialization/kotlinx-serialization.k2")
 project(":kotlinx-serialization-compiler-plugin.common").projectDir = File("$rootDir/plugins/kotlinx-serialization/kotlinx-serialization.common")
+project(":compiler:cli-js").projectDir = File("$rootDir/compiler/cli/cli-js")
+project(":compiler:backend.js").projectDir = File("$rootDir/compiler/ir/backend.js")
+project(":compiler:backend.wasm").projectDir = File("$rootDir/compiler/ir/backend.wasm")
+project(":compiler:ir.serialization.js").projectDir = File("$rootDir/compiler/ir/serialization.js")

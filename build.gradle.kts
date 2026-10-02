@@ -1,7 +1,3 @@
-import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin
-import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootEnvSpec
-import org.jetbrains.kotlin.gradle.targets.wasm.yarn.WasmYarnPlugin
-import org.jetbrains.kotlin.gradle.targets.wasm.yarn.WasmYarnRootEnvSpec
 buildscript {
     dependencies {
         classpath("org.jetbrains.kotlin:kotlin-build-gradle-plugin:${kotlinBuildProperties.buildGradlePluginVersion.get()}")
@@ -67,8 +63,6 @@ plugins {
         id("kotlin.native.build-tools-conventions") apply false
     }
     `jvm-toolchains`
-    alias(libs.plugins.gradle.node) apply false
-    id("nodejs-cache-redirector-configuration")
     id("com.autonomousapps.dependency-analysis") version "3.6.1"
     id("project-tests-convention") apply false
     id("test-data-manager-root")
@@ -135,7 +129,6 @@ if (!project.hasProperty("versions.kotlin-native")) {
 val irCompilerModules = arrayOf(
     ":compiler:ir.tree",
     ":compiler:ir.serialization.common",
-    ":compiler:ir.serialization.js",
     ":compiler:ir.serialization.jvm",
     ":compiler:ir.serialization.native",
     ":compiler:ir.objcinterop",
@@ -145,9 +138,6 @@ val irCompilerModules = arrayOf(
     ":compiler:ir.interpreter",
     ":compiler:ir.inline",
     ":compiler:ir.validation",
-    ":wasm:wasm.ir",
-    ":js:typescript-export-model",
-    ":js:typescript-printer",
 ).also { extra["irCompilerModules"] = it }
 
 val irCompilerModulesForIDE = arrayOf(
@@ -168,7 +158,6 @@ val commonCompilerModules = arrayOf(
     ":compiler:cli-base",
     ":compiler:cli",
     ":compiler:cli-jvm",
-    ":compiler:cli-js",
     ":compiler:cli-metadata",
     ":compiler:psi:psi-api",
     ":compiler:psi:psi-impl",
@@ -192,10 +181,7 @@ val commonCompilerModules = arrayOf(
     ":core:deserialization.common.jvm",
     ":core:compiler.common",
     ":core:compiler.common.jvm",
-    ":core:compiler.common.js",
     ":core:compiler.common.native",
-    ":core:compiler.common.wasm",
-    ":core:compiler.common.web",
     ":core:util.runtime",
     ":core:names",
     ":core:language.model",
@@ -208,7 +194,6 @@ val commonCompilerModules = arrayOf(
     ":analysis:light-classes-base",
     ":analysis:decompiled:decompiler-to-stubs",
     ":analysis:decompiled:decompiler-to-file-stubs",
-    ":analysis:decompiled:decompiler-js",
     ":analysis:decompiled:decompiler-native",
     ":analysis:decompiled:decompiler-to-psi",
     ":analysis:decompiled:light-classes-for-decompiled",
@@ -221,9 +206,6 @@ val commonCompilerModules = arrayOf(
     ":native:binary-options",
     ":native:kotlin-native-utils",
     ":compiler:build-tools:kotlin-build-statistics",
-    ":js:js.config",
-    ":js:js.frontend.common",
-    ":wasm:wasm.config",
     ":native:native.config",
 ).also { extra["commonCompilerModules"] = it }
 
@@ -237,16 +219,12 @@ val firCompilerCoreModules = arrayOf(
     ":compiler:fir:plugin-utils",
     ":compiler:fir:tree",
     ":compiler:fir:fir-jvm",
-    ":compiler:fir:fir-js",
     ":compiler:fir:fir-native",
     ":compiler:fir:raw-fir:raw-fir.common",
     ":compiler:fir:raw-fir:psi2fir",
     ":compiler:fir:checkers",
     ":compiler:fir:checkers:checkers.jvm",
-    ":compiler:fir:checkers:checkers.js",
     ":compiler:fir:checkers:checkers.native",
-    ":compiler:fir:checkers:checkers.wasm",
-    ":compiler:fir:checkers:checkers.web.common",
     ":compiler:fir:diagnostic-renderers",
     ":compiler:fir:entrypoint", // TODO should not be in core modules but FIR IDE uses DependencyListForCliModule from this module
     ":compiler:fir:fir2ir:jvm-backend",  // TODO should not be in core modules but FIR IDE uses Fir2IrSignatureComposer from this module
@@ -278,20 +256,11 @@ val fe10CompilerModules = arrayOf(
     ":compiler:backend.jvm.lower",
     ":compiler:backend.jvm.codegen",
     ":compiler:backend.jvm.entrypoint",
-    ":compiler:backend.js",
-    ":compiler:backend.wasm",
     ":kotlin-util-klib-metadata",
     ":compiler:backend",
     ":compiler:javac-wrapper",
     ":compiler:incremental-compilation-impl",
-    ":js:js.ast",
-    ":js:js.sourcemap",
-    ":js:js.serializer",
-    ":js:js.parser",
-    ":js:js.frontend",
-    ":js:js.translator",
     ":native:frontend.native",
-    ":wasm:wasm.frontend",
     ":compiler:backend.common.jvm",
 ).also { extra["fe10CompilerModules"] = it }
 
@@ -762,37 +731,6 @@ tasks.register("mvnInstall") {
     group = "publishing"
 }
 
-gradle.taskGraph.whenReady(checkYarnAndNPMSuppressed)
-
-plugins.withType(org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootPlugin::class) {
-    extensions.configure(org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension::class.java) {
-        npmInstallTaskProvider.configure {
-            args += listOf("--network-concurrency", "1", "--mutex", "network")
-        }
-    }
-}
-
-if (kotlinBuildProperties.isCacheRedirectorEnabled.get()) {
-    configureJsCacheRedirector()
-}
-
 afterEvaluate {
     checkExpectedGradlePropertyValues()
-}
-
-// workaround for KT-68482
-tasks.withType<org.jetbrains.kotlin.gradle.targets.js.npm.tasks.KotlinNpmInstallTask>().configureEach {
-    notCompatibleWithConfigurationCache("KotlinNpmInstallTask is not compatible with Configuration Cache")
-}
-
-plugins.withType<YarnPlugin> {
-    extensions.configure<YarnRootEnvSpec> {
-        version = libs.versions.yarn
-    }
-}
-
-plugins.withType<WasmYarnPlugin> {
-    extensions.configure<WasmYarnRootEnvSpec> {
-        version = libs.versions.yarn
-    }
 }

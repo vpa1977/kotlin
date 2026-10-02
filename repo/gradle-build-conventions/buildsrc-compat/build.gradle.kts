@@ -95,8 +95,6 @@ dependencies {
     implementation(libs.gradle.pluginPublish.gradlePlugin)
     implementation(libs.spdx.gradlePlugin)
     implementation(libs.dexMemberList)
-    compileOnly(libs.node.gradlePlugin)
-
     implementation(libs.shadow.gradlePlugin)
     implementation(libs.proguard.gradlePlugin)
 

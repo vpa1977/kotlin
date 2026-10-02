@@ -36,7 +36,6 @@ dependencies {
     api(project(":utilities"))
     compileOnly("org.jetbrains.kotlin:kotlin-gradle-plugin:${project.bootstrapKotlinVersion}")
     implementation(project(":d8-configuration"))
-    compileOnly(libs.node.gradlePlugin)
 
     constraints {
         api(libs.apache.commons.lang)
