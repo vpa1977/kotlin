@@ -32,21 +32,6 @@ kotlin {
     }
 }
 
-registerKotlinSourceForVersionRange(
-    GradlePluginVariant.GRADLE_MIN,
-    GradlePluginVariant.GRADLE_82,
-)
-
-registerKotlinSourceForVersionRange(
-    GradlePluginVariant.GRADLE_MIN,
-    GradlePluginVariant.GRADLE_86,
-)
-
-registerKotlinSourceForVersionRange(
-    GradlePluginVariant.GRADLE_MIN,
-    GradlePluginVariant.GRADLE_811,
-)
-
 val unpublishedCompilerRuntimeDependencies = listOf(
     // TODO: remove in KT-70247
     ":compiler:cli", // for MessageRenderer, related to MessageCollector usage
@@ -441,11 +426,6 @@ gradlePlugin {
             }
         }
     }
-}
-
-// Workaround for KT-75550
-tasks.named("gradle813Jar") {
-    enabled = false
 }
 
 tasks.withType<Jar>().configureEach {
