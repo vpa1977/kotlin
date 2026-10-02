@@ -138,19 +138,6 @@ public abstract class org/jetbrains/kotlin/gradle/dsl/AbstractKotlinNativeBinary
 	public fun toArray ([Ljava/lang/Object;)[Ljava/lang/Object;
 }
 
-public abstract class org/jetbrains/kotlin/gradle/dsl/KotlinAndroidProjectExtension : org/jetbrains/kotlin/gradle/dsl/KotlinSingleTargetExtension, org/jetbrains/kotlin/gradle/dsl/KotlinAndroidExtension {
-	public fun <init> (Lorg/gradle/api/Project;)V
-	public fun compilerOptions (Lkotlin/jvm/functions/Function1;)V
-	public fun compilerOptions (Lorg/gradle/api/Action;)V
-	public synthetic fun getCompilerOptions ()Lorg/jetbrains/kotlin/gradle/dsl/KotlinCommonCompilerOptions;
-	public fun getCompilerOptions ()Lorg/jetbrains/kotlin/gradle/dsl/KotlinJvmCompilerOptions;
-	public fun getSourceSets ()Lorg/gradle/api/NamedDomainObjectContainer;
-	public synthetic fun getTarget ()Lorg/jetbrains/kotlin/gradle/plugin/KotlinTarget;
-	public fun getTarget ()Lorg/jetbrains/kotlin/gradle/plugin/mpp/KotlinAndroidTarget;
-	public synthetic fun getTargetFuture$kotlin_gradle_plugin_common ()Lorg/jetbrains/kotlin/gradle/utils/Future;
-	public fun target (Lkotlin/jvm/functions/Function1;)V
-}
-
 public abstract interface class org/jetbrains/kotlin/gradle/dsl/KotlinCommonCompile : org/jetbrains/kotlin/gradle/dsl/KotlinCompile, org/jetbrains/kotlin/gradle/tasks/KotlinCompilationTask {
 }
 
@@ -365,11 +352,6 @@ public final class org/jetbrains/kotlin/gradle/logging/GradleErrorMessageCollect
 	public fun report (Lorg/jetbrains/kotlin/cli/common/messages/CompilerMessageSeverity;Ljava/lang/String;Lorg/jetbrains/kotlin/cli/common/messages/CompilerMessageSourceLocation;)V
 }
 
-public abstract class org/jetbrains/kotlin/gradle/plugin/AbstractKotlinAndroidPluginWrapper : org/jetbrains/kotlin/gradle/plugin/KotlinBasePluginWrapper {
-	public fun <init> ()V
-	public fun getProjectExtensionClass ()Lkotlin/reflect/KClass;
-}
-
 public abstract class org/jetbrains/kotlin/gradle/plugin/AbstractKotlinJsPluginWrapper : org/jetbrains/kotlin/gradle/plugin/KotlinBasePluginWrapper {
 	public fun <init> ()V
 	public fun getProjectExtensionClass ()Lkotlin/reflect/KClass;
@@ -402,17 +384,6 @@ public abstract class org/jetbrains/kotlin/gradle/plugin/AbstractKotlinTargetCon
 public final class org/jetbrains/kotlin/gradle/plugin/AbstractKotlinTargetConfigurator$Companion {
 }
 
-public final class org/jetbrains/kotlin/gradle/plugin/AndroidGradlePluginVersion$Companion {
-	public final fun getCurrent ()Lorg/jetbrains/kotlin/gradle/plugin/AndroidGradlePluginVersion;
-	public final fun getCurrentOrNull ()Lorg/jetbrains/kotlin/gradle/plugin/AndroidGradlePluginVersion;
-}
-
-public final class org/jetbrains/kotlin/gradle/plugin/AndroidTestedVariantArtifactsFilter : java/io/Serializable, org/gradle/api/specs/Spec {
-	public fun <init> (Lorg/gradle/api/artifacts/ArtifactCollection;ZLjava/lang/String;)V
-	public fun isSatisfiedBy (Ljava/io/File;)Z
-	public synthetic fun isSatisfiedBy (Ljava/lang/Object;)Z
-}
-
 public class org/jetbrains/kotlin/gradle/plugin/BuildEventsListenerRegistryHolder {
 	public static final field Companion Lorg/jetbrains/kotlin/gradle/plugin/BuildEventsListenerRegistryHolder$Companion;
 	public fun <init> (Lorg/gradle/build/event/BuildEventsListenerRegistry;)V
@@ -430,33 +401,6 @@ public abstract class org/jetbrains/kotlin/gradle/plugin/DefaultKotlinBasePlugin
 	public fun getPluginVersion ()Ljava/lang/String;
 	protected final fun setupAttributeMatchingStrategy (Lorg/gradle/api/Project;)V
 	public fun whenBuildEvaluated (Lorg/gradle/api/Project;)V
-}
-
-public final class org/jetbrains/kotlin/gradle/plugin/DeprecatedKotlinJvmOptions : org/jetbrains/kotlin/gradle/dsl/KotlinJvmOptions {
-	public fun <init> (Lorg/jetbrains/kotlin/gradle/dsl/KotlinJvmCompilerOptions;)V
-	public fun getAllWarningsAsErrors ()Z
-	public fun getApiVersion ()Ljava/lang/String;
-	public fun getFreeCompilerArgs ()Ljava/util/List;
-	public fun getJavaParameters ()Z
-	public fun getJvmTarget ()Ljava/lang/String;
-	public fun getLanguageVersion ()Ljava/lang/String;
-	public fun getModuleName ()Ljava/lang/String;
-	public fun getNoJdk ()Z
-	public synthetic fun getOptions ()Lorg/jetbrains/kotlin/gradle/dsl/KotlinCommonCompilerOptions;
-	public synthetic fun getOptions ()Lorg/jetbrains/kotlin/gradle/dsl/KotlinCommonCompilerToolOptions;
-	public fun getOptions ()Lorg/jetbrains/kotlin/gradle/dsl/KotlinJvmCompilerOptions;
-	public fun getSuppressWarnings ()Z
-	public fun getVerbose ()Z
-	public fun setAllWarningsAsErrors (Z)V
-	public fun setApiVersion (Ljava/lang/String;)V
-	public fun setFreeCompilerArgs (Ljava/util/List;)V
-	public fun setJavaParameters (Z)V
-	public fun setJvmTarget (Ljava/lang/String;)V
-	public fun setLanguageVersion (Ljava/lang/String;)V
-	public fun setModuleName (Ljava/lang/String;)V
-	public fun setNoJdk (Z)V
-	public fun setSuppressWarnings (Z)V
-	public fun setVerbose (Z)V
 }
 
 public final class org/jetbrains/kotlin/gradle/plugin/GradleUtilsKt {
@@ -496,13 +440,6 @@ public class org/jetbrains/kotlin/gradle/plugin/KaptExtension : org/jetbrains/ko
 	public fun setStripMetadata (Z)V
 	public fun setUseBuildCache (Z)V
 	public fun setUseLightAnalysis (Z)V
-}
-
-public class org/jetbrains/kotlin/gradle/plugin/KotlinAndroidPluginWrapper : org/jetbrains/kotlin/gradle/plugin/AbstractKotlinAndroidPluginWrapper {
-	public fun <init> ()V
-	public synthetic fun apply (Ljava/lang/Object;)V
-	public fun apply (Lorg/gradle/api/Project;)V
-	public fun getPluginVariant ()Ljava/lang/String;
 }
 
 public class org/jetbrains/kotlin/gradle/plugin/KotlinApiPlugin : org/jetbrains/kotlin/gradle/plugin/KotlinBaseApiPlugin {
@@ -997,54 +934,6 @@ public final class org/jetbrains/kotlin/gradle/plugin/mpp/HierarchyAttributeCont
 	public fun named (Ljava/lang/Class;Ljava/lang/String;)Lorg/gradle/api/Named;
 }
 
-public final class org/jetbrains/kotlin/gradle/plugin/mpp/JointAndroidKotlinTargetComponent : org/jetbrains/kotlin/gradle/plugin/mpp/InternalKotlinTargetComponent, org/jetbrains/kotlin/gradle/plugin/mpp/KotlinTargetComponentWithCoordinatesAndPublication {
-	public fun <init> (Lorg/jetbrains/kotlin/gradle/plugin/mpp/KotlinAndroidTarget;Ljava/util/Set;Ljava/util/List;)V
-	public fun getCoordinates ()Lorg/gradle/api/artifacts/ModuleVersionIdentifier;
-	public fun getDefaultArtifactId ()Ljava/lang/String;
-	public final fun getFlavorNames ()Ljava/util/List;
-	public fun getName ()Ljava/lang/String;
-	public fun getPublicationDelegate ()Lorg/gradle/api/publish/maven/MavenPublication;
-	public fun getPublishable ()Z
-	public fun getPublishableOnCurrentHost ()Z
-	public synthetic fun getTarget ()Lorg/jetbrains/kotlin/gradle/plugin/KotlinTarget;
-	public fun getTarget ()Lorg/jetbrains/kotlin/gradle/plugin/mpp/KotlinAndroidTarget;
-	public fun getUsages ()Ljava/util/Set;
-	public fun setPublicationDelegate (Lorg/gradle/api/publish/maven/MavenPublication;)V
-}
-
-public abstract class org/jetbrains/kotlin/gradle/plugin/mpp/KotlinAndroidTarget : org/jetbrains/kotlin/gradle/plugin/mpp/AbstractKotlinTarget, org/jetbrains/kotlin/gradle/dsl/HasConfigurableKotlinCompilerOptions {
-	public fun <init> (Ljava/lang/String;Lorg/gradle/api/Project;Z)V
-	public fun compilerOptions (Lkotlin/jvm/functions/Function1;)V
-	public fun compilerOptions (Lorg/gradle/api/Action;)V
-	public fun getCompilations ()Lorg/gradle/api/NamedDomainObjectContainer;
-	public synthetic fun getCompilerOptions ()Lorg/jetbrains/kotlin/gradle/dsl/KotlinCommonCompilerOptions;
-	public fun getCompilerOptions ()Lorg/jetbrains/kotlin/gradle/dsl/KotlinJvmCompilerOptions;
-	public final fun getDisambiguationClassifier ()Ljava/lang/String;
-	public final fun getInstrumentedTestVariant ()Lorg/jetbrains/kotlin/gradle/plugin/mpp/KotlinAndroidTargetVariantDsl;
-	public fun getKotlinComponents ()Ljava/util/Set;
-	public final fun getMainVariant ()Lorg/jetbrains/kotlin/gradle/plugin/mpp/KotlinAndroidTargetVariantDsl;
-	public fun getPlatformType ()Lorg/jetbrains/kotlin/gradle/plugin/KotlinPlatformType;
-	public final fun getPublishLibraryVariants ()Ljava/util/List;
-	public final fun getPublishLibraryVariantsGroupedByFlavor ()Z
-	public final fun getTargetName ()Ljava/lang/String;
-	public final fun getUnitTestVariant ()Lorg/jetbrains/kotlin/gradle/plugin/mpp/KotlinAndroidTargetVariantDsl;
-	public final fun instrumentedTestVariant (Lkotlin/jvm/functions/Function1;)V
-	public final fun instrumentedTestVariant (Lorg/gradle/api/Action;)V
-	public final fun isMultiplatformProject ()Z
-	public final fun mainVariant (Lkotlin/jvm/functions/Function1;)V
-	public final fun mainVariant (Lorg/gradle/api/Action;)V
-	public final fun publishAllLibraryVariants ()V
-	public final fun publishLibraryVariants ([Ljava/lang/String;)V
-	public final fun setPublishLibraryVariants (Ljava/util/List;)V
-	public final fun setPublishLibraryVariantsGroupedByFlavor (Z)V
-	public final fun unitTestVariant (Lkotlin/jvm/functions/Function1;)V
-	public final fun unitTestVariant (Lorg/gradle/api/Action;)V
-}
-
-public abstract interface class org/jetbrains/kotlin/gradle/plugin/mpp/KotlinAndroidTargetVariantDsl {
-	public abstract fun getSourceSetTree ()Lorg/gradle/api/provider/Property;
-}
-
 public class org/jetbrains/kotlin/gradle/plugin/mpp/KotlinCommonCompilation : org/jetbrains/kotlin/gradle/plugin/mpp/AbstractKotlinCompilation, org/jetbrains/kotlin/gradle/plugin/mpp/KotlinMetadataCompilation {
 	public fun getCompileTaskProvider ()Lorg/gradle/api/tasks/TaskProvider;
 }
@@ -1090,25 +979,6 @@ public class org/jetbrains/kotlin/gradle/plugin/mpp/KotlinJsCompilation : org/je
 
 public final class org/jetbrains/kotlin/gradle/plugin/mpp/KotlinJsCompilationKt {
 	public static final fun getFileExtension (Lorg/jetbrains/kotlin/gradle/plugin/mpp/KotlinJsCompilation;)Lorg/gradle/api/provider/Provider;
-}
-
-public class org/jetbrains/kotlin/gradle/plugin/mpp/KotlinJvmAndroidCompilation : org/jetbrains/kotlin/gradle/plugin/mpp/AbstractKotlinCompilationToRunnableFiles {
-	public final fun getAndroidVariant ()Lcom/android/build/gradle/api/BaseVariant;
-	public final fun getCompileJavaTaskProvider ()Lorg/gradle/api/tasks/TaskProvider;
-	public fun getCompileTaskProvider ()Lorg/gradle/api/tasks/TaskProvider;
-	public fun getCompilerOptions ()Lorg/jetbrains/kotlin/gradle/plugin/HasCompilerOptions;
-	public synthetic fun getTarget ()Lorg/jetbrains/kotlin/gradle/plugin/KotlinTarget;
-	public fun getTarget ()Lorg/jetbrains/kotlin/gradle/plugin/mpp/KotlinAndroidTarget;
-}
-
-public final class org/jetbrains/kotlin/gradle/plugin/mpp/KotlinJvmAndroidCompilationFactory : org/jetbrains/kotlin/gradle/plugin/mpp/KotlinCompilationFactory {
-	public synthetic fun create (Ljava/lang/String;)Ljava/lang/Object;
-	public fun create (Ljava/lang/String;)Lorg/jetbrains/kotlin/gradle/plugin/mpp/KotlinJvmAndroidCompilation;
-	public fun defaultSourceSetName (Ljava/lang/String;)Ljava/lang/String;
-	public fun getItemClass ()Ljava/lang/Class;
-	public fun getProject ()Lorg/gradle/api/Project;
-	public synthetic fun getTarget ()Lorg/jetbrains/kotlin/gradle/plugin/KotlinTarget;
-	public fun getTarget ()Lorg/jetbrains/kotlin/gradle/plugin/mpp/KotlinAndroidTarget;
 }
 
 public class org/jetbrains/kotlin/gradle/plugin/mpp/KotlinJvmCompilation : org/jetbrains/kotlin/gradle/plugin/mpp/AbstractKotlinCompilationToRunnableFiles, org/jetbrains/kotlin/gradle/plugin/KotlinCompilationWithResources {
@@ -1982,26 +1852,6 @@ public final class org/jetbrains/kotlin/gradle/plugin/sources/DefaultKotlinSourc
 public final class org/jetbrains/kotlin/gradle/plugin/sources/SourceSetsVisibilityInferenceKt {
 	public static final fun getSourceSetsFromAssociatedCompilations (Lorg/jetbrains/kotlin/gradle/plugin/KotlinCompilation;)Ljava/util/Map;
 	public static final fun getVisibleSourceSetsFromAssociateCompilations (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;)Ljava/util/List;
-}
-
-public abstract class org/jetbrains/kotlin/gradle/plugin/sources/android/KotlinAndroidSourceSetInfo {
-	public abstract fun getAndroidSourceSetName ()Ljava/lang/String;
-	public abstract fun getAndroidVariantNames ()Ljava/util/Set;
-	public abstract fun getKotlinSourceSetName ()Ljava/lang/String;
-}
-
-public final class org/jetbrains/kotlin/gradle/plugin/sources/android/KotlinAndroidSourceSetInfoKt {
-	public static final fun findAndroidSourceSet (Lorg/gradle/api/Project;Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;)Lcom/android/build/gradle/api/AndroidSourceSet;
-	public static final fun findKotlinSourceSet (Lorg/gradle/api/Project;Lcom/android/build/gradle/api/AndroidSourceSet;)Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;
-	public static final fun findKotlinSourceSet (Lorg/gradle/api/Project;Lcom/android/builder/model/SourceProvider;)Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;
-	public static final fun getAndroidSourceSetInfo (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;)Lorg/jetbrains/kotlin/gradle/plugin/sources/android/KotlinAndroidSourceSetInfo;
-	public static final fun getAndroidSourceSetInfoOrNull (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;)Lorg/jetbrains/kotlin/gradle/plugin/sources/android/KotlinAndroidSourceSetInfo;
-}
-
-public final class org/jetbrains/kotlin/gradle/plugin/sources/android/configurator/Agp7AddKotlinSourcesToAndroidSourceSetConfigurator : org/jetbrains/kotlin/gradle/plugin/sources/android/configurator/KotlinAndroidSourceSetConfigurator {
-	public static final field INSTANCE Lorg/jetbrains/kotlin/gradle/plugin/sources/android/configurator/Agp7AddKotlinSourcesToAndroidSourceSetConfigurator;
-	public fun configure (Lorg/jetbrains/kotlin/gradle/plugin/mpp/KotlinAndroidTarget;Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;Lcom/android/build/gradle/api/AndroidSourceSet;)V
-	public fun configureWithVariant (Lorg/jetbrains/kotlin/gradle/plugin/mpp/KotlinAndroidTarget;Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;Lcom/android/build/gradle/api/BaseVariant;)V
 }
 
 public abstract class org/jetbrains/kotlin/gradle/plugin/statistics/BuildFinishFlowProviderManager {
