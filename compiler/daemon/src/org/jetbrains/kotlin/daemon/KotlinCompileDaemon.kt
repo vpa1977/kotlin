@@ -152,14 +152,12 @@ abstract class KotlinCompileDaemonBase {
 
                 val compilerSelector = object : CompilerSelector {
                     private val jvm by lazy { K2JVMCompiler() }
-                    private val js by lazy { K2JSCompiler() }
-                    private val wasm by lazy { KotlinWasmCompiler() }
                     private val metadata by lazy { KotlinMetadataCompiler() }
                     override fun get(targetPlatform: CompileService.TargetPlatform): CLICompiler<*> = when (targetPlatform) {
                         CompileService.TargetPlatform.JVM -> jvm
-                        CompileService.TargetPlatform.JS -> js
-                        CompileService.TargetPlatform.WASM -> wasm
                         CompileService.TargetPlatform.METADATA -> metadata
+                        CompileService.TargetPlatform.JS -> throw IllegalArgumentException("JS backend is not supported.")
+                        CompileService.TargetPlatform.WASM -> throw IllegalArgumentException("WASM backend is not supported.")
                     }
                 }
                 // timer with a daemon thread, meaning it should not prevent JVM to exit normally
