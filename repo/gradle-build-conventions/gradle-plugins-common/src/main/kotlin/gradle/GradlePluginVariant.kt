@@ -30,7 +30,7 @@ enum class GradlePluginVariant(
     /**
      * Tests rely on these entries being sorted
      */
-    GRADLE_MIN("main", "7.6", "7.6", "https://docs.gradle.org/7.6.1/javadoc/", "1.7", "1.4.0"),
+    GRADLE_MIN("main", "8.13", "8.13", "https://docs.gradle.org/current/javadoc/", "1.7", "1.4.0"),
     ;
 
     val compatibleKotlinxJsonSerializationVersion: String

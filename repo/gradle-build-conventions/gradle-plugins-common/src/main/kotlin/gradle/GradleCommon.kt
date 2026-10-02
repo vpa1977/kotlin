@@ -366,9 +366,10 @@ fun Project.reconfigureMainSourcesSetForGradlePlugin(
 
         dependencies {
             "compileOnly"("org.jetbrains.kotlin:kotlin-stdlib:${GradlePluginVariant.GRADLE_MIN.bundledKotlinVersion}.0")
-            // Decoupling gradle-api artifact from current project Gradle version. Later would be useful for
-            // gradle plugin variants
-            "compileOnly"("dev.gradleplugins:gradle-api:${GradlePluginVariant.GRADLE_MIN.gradleApiVersion}")
+            // dev.gradleplugins:gradle-api is not published for 8.13; use the intellij-deps repack instead
+            // (same workaround the former gradle813 variant used).
+            "compileOnly"("org.jetbrains.intellij.deps:gradle-api:${GradlePluginVariant.GRADLE_MIN.gradleApiVersion}")
+            "compileOnly"("javax.inject:javax.inject:1")
             if (this@reconfigureMainSourcesSetForGradlePlugin.name !in testPlugins) {
                 "api"(project(":kotlin-gradle-plugin-api"))
             }
@@ -909,7 +910,8 @@ fun Project.createGradlePluginVariants(
     publishShadowedJar: Boolean,
 ) {
     // Only the default ('main') variant is published; no additional per-Gradle variants.
-    emptyListOf<GradlePluginVariant>().forEach { variant: GradlePluginVariant ->
+    val variants: List<GradlePluginVariant> = listOf()
+    variants.forEach { variant ->
         createGradlePluginVariant(
             variant = variant,
             commonSourceSet = commonSourceSet,
