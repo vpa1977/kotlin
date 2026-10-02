@@ -63,8 +63,6 @@ dependencies {
     testImplementation(gradleKotlinDsl())
     testImplementation(gradleApi())
     testImplementation(libs.junit.jupiter.api)
-    testImplementation(libs.dokka.gradlePlugin)
-    testImplementation(project(":gradle-plugins-documentation"))
     testRuntimeOnly(libs.junit.platform.launcher)
     testRuntimeOnly(libs.junit.jupiter.engine)
 

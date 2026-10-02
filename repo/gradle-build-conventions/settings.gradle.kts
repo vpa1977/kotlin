@@ -32,7 +32,6 @@ include(":project-tests-convention")
 include(":android-sdk-provisioner")
 include(":asm-deprecating-transformer")
 include(":binary-compatibility-extended")
-include(":gradle-plugins-documentation")
 include(":gradle-plugins-common")
 include(":d8-configuration")
 // TODO: uncomment after bootstrap
