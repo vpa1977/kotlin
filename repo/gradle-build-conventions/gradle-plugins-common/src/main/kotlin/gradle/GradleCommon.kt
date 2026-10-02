@@ -909,8 +909,7 @@ fun Project.createGradlePluginVariants(
     publishShadowedJar: Boolean,
 ) {
     // Only the default ('main') variant is published; no additional per-Gradle variants.
-    emptyListOf<GradlePluginVariant>(
-    ).forEach { variant ->
+    emptyListOf<GradlePluginVariant>().forEach { variant: GradlePluginVariant ->
         createGradlePluginVariant(
             variant = variant,
             commonSourceSet = commonSourceSet,
