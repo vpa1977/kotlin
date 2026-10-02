@@ -5,7 +5,6 @@
 
 package org.jetbrains.kotlin.gradle.tooling
 
-import com.android.build.gradle.BaseExtension
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 import org.gradle.api.file.ProjectLayout
@@ -15,7 +14,6 @@ import org.gradle.work.DisableCachingByDefault
 import org.jetbrains.kotlin.gradle.dsl.*
 import org.jetbrains.kotlin.gradle.internal.properties.nativeProperties
 import org.jetbrains.kotlin.gradle.plugin.*
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinAndroidTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsSubTargetContainerDsl
 import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
@@ -137,7 +135,6 @@ private fun buildTargetString(target: KotlinTarget): String {
 private fun buildTargetMetadataExtras(target: KotlinTarget): KotlinToolingMetadata.ProjectTargetMetadata.Extras {
     return KotlinToolingMetadata.ProjectTargetMetadata.Extras(
         jvm = buildJvmExtrasOrNull(target),
-        android = buildAndroidExtrasOrNull(target),
         js = buildJsExtrasOrNull(target),
         native = buildNativeExtrasOrNull(target)
     )
@@ -150,15 +147,6 @@ private fun buildJvmExtrasOrNull(target: KotlinTarget): KotlinToolingMetadata.Pr
         withJavaEnabled = target.withJavaEnabled,
         jvmTarget = target.compilations.findByName(KotlinCompilation.MAIN_COMPILATION_NAME)
             ?.compilerOptions?.options?.jvmTarget?.orNull?.target
-    )
-}
-
-private fun buildAndroidExtrasOrNull(target: KotlinTarget): KotlinToolingMetadata.ProjectTargetMetadata.AndroidExtras? {
-    if (target !is KotlinAndroidTarget) return null
-    val androidExtension = target.project.extensions.findByType(BaseExtension::class.java)
-    return KotlinToolingMetadata.ProjectTargetMetadata.AndroidExtras(
-        sourceCompatibility = androidExtension?.compileOptions?.sourceCompatibility.toString(),
-        targetCompatibility = androidExtension?.compileOptions?.targetCompatibility.toString()
     )
 }
 

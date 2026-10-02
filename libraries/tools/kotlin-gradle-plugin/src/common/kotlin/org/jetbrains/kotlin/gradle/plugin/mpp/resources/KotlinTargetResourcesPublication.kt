@@ -9,7 +9,6 @@ import org.gradle.api.provider.Provider
 import org.jetbrains.kotlin.gradle.ComposeKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinAndroidTarget
 import java.io.File
 
 @ComposeKotlinGradlePluginApi
@@ -28,13 +27,6 @@ interface KotlinTargetResourcesPublication {
         resourcePathForSourceSet: (KotlinSourceSet) -> (ResourceRoot),
         relativeResourcePlacement: Provider<File>,
     )
-
-    fun publishInAndroidAssets(
-        target: KotlinAndroidTarget,
-        resourcePathForSourceSet: (KotlinSourceSet) -> (ResourceRoot),
-        relativeResourcePlacement: Provider<File>,
-    )
-
     fun canResolveResources(target: KotlinTarget): Boolean
 
     fun resolveResources(target: KotlinTarget): Provider<File>

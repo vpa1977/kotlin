@@ -21,7 +21,6 @@ import org.jetbrains.kotlin.gradle.plugin.PropertiesProvider.Companion.kotlinPro
 import org.jetbrains.kotlin.gradle.plugin.diagnostics.KotlinToolingDiagnostics
 import org.jetbrains.kotlin.gradle.plugin.diagnostics.reportDiagnostic
 import org.jetbrains.kotlin.gradle.plugin.launch
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinAndroidTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import java.io.File
 
@@ -71,24 +70,6 @@ private fun Project.processJvmKindTargets(
                 false,
                 target.compilations,
                 KotlinCompilation.MAIN_COMPILATION_NAME
-            )
-        }
-
-    targets
-        .asSequence()
-        .filterIsInstance<KotlinAndroidTarget>()
-        .forEach { target ->
-            if (binariesSource == BinariesSource.MAVEN_PUBLICATIONS) {
-                reportDiagnostic(KotlinToolingDiagnostics.AbiValidationAndroidPublicationNotSupported())
-            }
-
-            addJvmInputs(
-                binariesSource,
-                abiValidationTaskSet,
-                target.targetName,
-                false,
-                target.compilations,
-                ANDROID_RELEASE_BUILD_TYPE
             )
         }
 }

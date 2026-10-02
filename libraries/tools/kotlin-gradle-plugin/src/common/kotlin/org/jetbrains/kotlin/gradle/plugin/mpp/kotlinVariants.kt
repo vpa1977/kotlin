@@ -104,30 +104,3 @@ class KotlinVariantWithMetadataVariant(
 ) : KotlinVariantWithCoordinates(producingCompilation, usages), ComponentWithVariants {
     override fun getVariants() = metadataTarget.components
 }
-
-class JointAndroidKotlinTargetComponent(
-    override val target: KotlinAndroidTarget,
-    private val nestedVariants: Set<KotlinVariant>,
-    val flavorNames: List<String>,
-) : InternalKotlinTargetComponent(), KotlinTargetComponentWithCoordinatesAndPublication {
-
-    override fun getUsages(): Set<KotlinUsageContext> = nestedVariants.filter { it.publishable }.flatMap { it.usages }.toSet()
-
-    override fun getName(): String = lowerCamelCaseName(target.targetName, *flavorNames.toTypedArray())
-
-    override val publishable: Boolean
-        get() = nestedVariants.any { it.publishable }
-
-    override val publishableOnCurrentHost: Boolean
-        get() = publishable
-
-    override val defaultArtifactId: String =
-        dashSeparatedName(
-            target.project.name,
-            target.targetName.toLowerCaseAsciiOnly(),
-            *flavorNames.map { it.toLowerCaseAsciiOnly() }.toTypedArray()
-        )
-
-    override var publicationDelegate: MavenPublication? = null
-
-}

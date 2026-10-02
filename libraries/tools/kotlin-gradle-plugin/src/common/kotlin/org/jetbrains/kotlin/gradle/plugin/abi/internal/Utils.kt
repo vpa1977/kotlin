@@ -15,8 +15,6 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.targets.js.KotlinWasmTargetType
 import org.jetbrains.kotlin.gradle.targets.js.ir.KotlinJsIrTarget
 
-internal const val ANDROID_RELEASE_BUILD_TYPE = "release"
-
 /**
  * Converts a [KotlinTarget] to a [KlibTargetId].
  */
@@ -47,10 +45,6 @@ internal val KotlinTarget.emitsKlib: Boolean
                 platformType == KotlinPlatformType.wasm ||
                 platformType == KotlinPlatformType.js
     }
-
-@Suppress("TYPEALIAS_EXPANSION_DEPRECATION")
-internal val org.jetbrains.kotlin.gradle.utils.DeprecatedAndroidBaseVariant.isTestVariant: Boolean
-    get() = this is org.jetbrains.kotlin.gradle.utils.DeprecatedAndroidTestVariant || this is org.jetbrains.kotlin.gradle.utils.DeprecatedAndroidUnitTestVariant
 
 /**
  * Executes a given [action] against the compilation with the name [compilationName].

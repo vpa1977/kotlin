@@ -9,7 +9,6 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinSourceSetConvention.isAccessedByKot
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.diagnostics.KotlinGradleProjectChecker
 import org.jetbrains.kotlin.gradle.plugin.diagnostics.KotlinGradleProjectCheckerContext
-import org.jetbrains.kotlin.gradle.plugin.diagnostics.KotlinToolingDiagnostics.AndroidMainSourceSetConventionUsedWithoutAndroidTarget
 import org.jetbrains.kotlin.gradle.plugin.diagnostics.KotlinToolingDiagnostics.IosSourceSetConventionUsedWithoutIosTarget
 import org.jetbrains.kotlin.gradle.plugin.diagnostics.KotlinToolingDiagnostics.PlatformSourceSetConventionUsedWithCustomTargetName
 import org.jetbrains.kotlin.gradle.plugin.diagnostics.KotlinToolingDiagnostics.PlatformSourceSetConventionUsedWithoutCorrespondingTarget
@@ -90,18 +89,6 @@ internal object PlatformSourceSetConventionsChecker : KotlinGradleProjectChecker
                     PlatformSourceSetConventionUsedWithoutCorrespondingTarget(sourceSet, platform.expectedTargetName)
                 )
             }
-        }
-    }
-}
-
-internal object AndroidMainSourceSetConventionsChecker : KotlinGradleProjectChecker {
-    override suspend fun KotlinGradleProjectCheckerContext.runChecks(collector: KotlinToolingDiagnosticsCollector) {
-        val kotlin = project.multiplatformExtensionOrNull ?: return
-        val androidMainSourceSet = kotlin.awaitSourceSets().findByName("androidMain") ?: return
-        if (androidMainSourceSet.isAccessedByKotlinSourceSetConventionAt == null) return
-        val androidTarget = kotlin.awaitTargets().findByName("android")
-        if (androidTarget == null) {
-            project.reportDiagnostic(AndroidMainSourceSetConventionUsedWithoutAndroidTarget(androidMainSourceSet))
         }
     }
 }

@@ -7,8 +7,6 @@ import org.gradle.api.Project
 import org.gradle.api.model.ObjectFactory
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.KotlinTargetsContainer
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinAndroidTarget
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinAndroidTargetPreset
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinJvmTargetPreset
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetPreset
@@ -41,57 +39,6 @@ interface KotlinTargetContainerWithPresetFunctions : KotlinTargetsContainer {
     ) = jvm(name) { configure.execute(this) }
 
     fun jvm(configure: Action<KotlinJvmTarget>) = jvm { configure.execute(this) }
-
-    /**
-     * The 'org.jetbrains.kotlin.multiplatform' plugin will not be compatible with most of the Android Gradle plugins
-     * from Android Gradle Plugin version 9.0.0.
-     * 
-     * Please use the 'com.android.kotlin.multiplatform.library' plugin instead. Read more: https://kotl.in/gradle/agp-new-kmp
-     * The change may require changing the structure of your project. Read more: https://kotl.in/kmp-project-structure-migration
-     */
-    fun androidTarget(
-        name: String = "android",
-        configure: KotlinAndroidTarget.() -> Unit = { }
-    ): KotlinAndroidTarget
-
-    /**
-     * The 'org.jetbrains.kotlin.multiplatform' plugin will not be compatible with most of the Android Gradle plugins
-     * from Android Gradle Plugin version 9.0.0.
-     * 
-     * Please use the 'com.android.kotlin.multiplatform.library' plugin instead. Read more: https://kotl.in/gradle/agp-new-kmp
-     * The change may require changing the structure of your project. Read more: https://kotl.in/kmp-project-structure-migration
-     */
-    fun androidTarget() = androidTarget("android") { }
-
-    /**
-     * The 'org.jetbrains.kotlin.multiplatform' plugin will not be compatible with most of the Android Gradle plugins
-     * from Android Gradle Plugin version 9.0.0.
-     * 
-     * Please use the 'com.android.kotlin.multiplatform.library' plugin instead. Read more: https://kotl.in/gradle/agp-new-kmp
-     * The change may require changing the structure of your project. Read more: https://kotl.in/kmp-project-structure-migration
-     */
-    fun androidTarget(name: String) = androidTarget(name) { }
-
-    /**
-     * The 'org.jetbrains.kotlin.multiplatform' plugin will not be compatible with most of the Android Gradle plugins
-     * from Android Gradle Plugin version 9.0.0.
-     * 
-     * Please use the 'com.android.kotlin.multiplatform.library' plugin instead. Read more: https://kotl.in/gradle/agp-new-kmp
-     * The change may require changing the structure of your project. Read more: https://kotl.in/kmp-project-structure-migration
-     */
-    fun androidTarget(
-        name: String,
-        configure: Action<KotlinAndroidTarget>
-    ) = androidTarget(name) { configure.execute(this) }
-
-    /**
-     * The 'org.jetbrains.kotlin.multiplatform' plugin will not be compatible with most of the Android Gradle plugins
-     * from Android Gradle Plugin version 9.0.0.
-     * 
-     * Please use the 'com.android.kotlin.multiplatform.library' plugin instead. Read more: https://kotl.in/gradle/agp-new-kmp
-     * The change may require changing the structure of your project. Read more: https://kotl.in/kmp-project-structure-migration
-     */
-    fun androidTarget(configure: Action<KotlinAndroidTarget>) = androidTarget { configure.execute(this) }
 
     fun androidNativeX64(
         name: String = "androidNativeX64",
@@ -488,24 +435,6 @@ internal abstract class DefaultKotlinTargetContainerWithPresetFunctions @Inject 
         configureOrCreate(
             name,
             presets.getByName("jvm") as KotlinJvmTargetPreset,
-            project,
-            configure
-        )
-
-    /**
-     * The 'org.jetbrains.kotlin.multiplatform' plugin will not be compatible with most of the Android Gradle plugins
-     * from Android Gradle Plugin version 9.0.0.
-     * 
-     * Please use the 'com.android.kotlin.multiplatform.library' plugin instead. Read more: https://kotl.in/gradle/agp-new-kmp
-     * The change may require changing the structure of your project. Read more: https://kotl.in/kmp-project-structure-migration
-     */
-    override fun androidTarget(
-        name: String,
-        configure: KotlinAndroidTarget.() -> Unit
-    ): KotlinAndroidTarget =
-        configureOrCreate(
-            name,
-            presets.getByName("android") as KotlinAndroidTargetPreset,
             project,
             configure
         )

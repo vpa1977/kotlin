@@ -67,17 +67,7 @@ private val KotlinCompilation<*>.allOwnedConfigurationsNames
             internal.configurations.hostSpecificMetadataConfiguration?.name,
         )
 
-        @Suppress("DEPRECATION") val implementationSpecificConfigurations = when (this) {
-            is KotlinJvmAndroidCompilation -> {
-                androidVariant?.let {
-                    listOf(
-                        "${it.name}ApiElements",
-                        "${it.name}RuntimeElements",
-                        it.compileConfiguration.name,
-                        it.runtimeConfiguration.name
-                    )
-                } ?: emptyList()
-            }
+        val implementationSpecificConfigurations = when (this) {
             is KotlinJsIrCompilation -> listOfNotNull(npmAggregatedConfigurationName, publicPackageJsonConfigurationName)
             else -> emptyList()
         }

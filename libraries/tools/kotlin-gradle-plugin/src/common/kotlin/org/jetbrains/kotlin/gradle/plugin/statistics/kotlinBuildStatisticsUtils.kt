@@ -248,10 +248,6 @@ private fun reportLibrariesVersions(
                 StringMetrics.KOTLIN_SERIALIZATION_VERSION,
                 dependency.version ?: "0.0.0"
             )
-            dependency.group == "com.android.tools.build" && dependency.name.startsWith("gradle") -> configurationTimeMetrics.put(
-                StringMetrics.ANDROID_GRADLE_PLUGIN_VERSION,
-                dependency.version ?: "0.0.0"
-            )
         }
     }
 }

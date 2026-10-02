@@ -19,7 +19,6 @@ import org.jetbrains.kotlin.gradle.internal.Kapt3GradleSubplugin.Companion.disab
 import org.jetbrains.kotlin.gradle.internal.kapt.KaptProperties
 import org.jetbrains.kotlin.gradle.internal.kapt.incremental.CLASS_STRUCTURE_ARTIFACT_TYPE
 import org.jetbrains.kotlin.gradle.internal.kapt.incremental.StructureTransformAction
-import org.jetbrains.kotlin.gradle.plugin.AbstractKotlinAndroidPluginWrapper
 import org.jetbrains.kotlin.gradle.plugin.KaptExtension
 import org.jetbrains.kotlin.gradle.plugin.getKotlinPluginVersion
 import org.jetbrains.kotlin.gradle.tasks.toCompilerPluginOptions
@@ -170,11 +169,7 @@ internal class KaptWithoutKotlincConfig : KaptConfig<KaptWithoutKotlincTask> {
 
     init {
         configureTask { task ->
-            task.addJdkClassesToClasspath.set(
-                project.providers.provider {
-                    project.plugins.none { it is AbstractKotlinAndroidPluginWrapper }
-                }
-            )
+            task.addJdkClassesToClasspath.set(true)
             task.kaptJars.from(project.configurations.getByName(Kapt3GradleSubplugin.KAPT_WORKER_DEPENDENCIES_CONFIGURATION_NAME))
             task.mapDiagnosticLocations = ext.mapDiagnosticLocations
             if (ext is KaptExtension) {
@@ -208,11 +203,7 @@ internal class KaptWithoutKotlincConfig : KaptConfig<KaptWithoutKotlincTask> {
             }
 
         configureTask { task ->
-            task.addJdkClassesToClasspath.set(
-                project.providers.provider {
-                    project.plugins.none { it is AbstractKotlinAndroidPluginWrapper }
-                }
-            )
+            task.addJdkClassesToClasspath.set(true)
             task.kaptJars.from(project.configurations.getByName(Kapt3GradleSubplugin.KAPT_WORKER_DEPENDENCIES_CONFIGURATION_NAME))
         }
     }

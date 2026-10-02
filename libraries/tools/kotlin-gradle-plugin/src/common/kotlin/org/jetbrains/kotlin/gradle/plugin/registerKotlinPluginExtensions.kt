@@ -29,7 +29,6 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.publishing.ExportRootModuleCoordin
 import org.jetbrains.kotlin.gradle.plugin.mpp.publishing.ExportTargetPublicationCoordinates
 import org.jetbrains.kotlin.gradle.plugin.mpp.publishing.MultiplatformPublishingSetupAction
 import org.jetbrains.kotlin.gradle.plugin.mpp.resources.RegisterMultiplatformResourcesPublicationExtensionAction
-import org.jetbrains.kotlin.gradle.plugin.mpp.resources.publication.SetUpMultiplatformAndroidAssetsAndResourcesPublicationAction
 import org.jetbrains.kotlin.gradle.plugin.mpp.resources.publication.SetUpMultiplatformJvmResourcesPublicationAction
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.swiftimport.SwiftImportSetupAction
 import org.jetbrains.kotlin.gradle.plugin.mpp.uklibs.consumption.UklibConsumptionSetupAction
@@ -102,7 +101,6 @@ internal fun Project.registerKotlinPluginExtensions() {
             register(project, SetupConsistentMetadataDependenciesResolution)
             register(project, RegisterMultiplatformResourcesPublicationExtensionAction)
             register(project, SetUpMultiplatformJvmResourcesPublicationAction)
-            register(project, SetUpMultiplatformAndroidAssetsAndResourcesPublicationAction)
             register(project, SetUpSwiftExportAction)
             register(project, ConfigureKotlinTopLevelDependenciesDSL)
             register(project, SwiftImportSetupAction)
@@ -166,7 +164,6 @@ internal fun Project.registerKotlinPluginExtensions() {
         register(project, DeprecatedKotlinNativeTargetsChecker)
         register(project, MissingNativeStdlibChecker)
         register(project, UnusedSourceSetsChecker)
-        register(project, AndroidPluginWithoutAndroidTargetChecker)
         register(project, NoKotlinTargetsDeclaredChecker)
         register(project, DisabledCinteropCommonizationInHmppProjectChecker)
         register(project, DisabledNativeTargetsChecker)
@@ -177,7 +174,6 @@ internal fun Project.registerKotlinPluginExtensions() {
         register(project, ExperimentalTryNextUsageChecker)
         register(project, KotlinSourceSetTreeDependsOnMismatchChecker)
         register(project, PlatformSourceSetConventionsChecker)
-        register(project, AndroidMainSourceSetConventionsChecker)
         register(project, IosSourceSetConventionChecker)
         register(project, KotlinTargetAlreadyDeclaredChecker)
         register(project, InternalGradlePropertiesUsageChecker)
@@ -188,7 +184,6 @@ internal fun Project.registerKotlinPluginExtensions() {
         register(project, GradleDeprecatedPropertyChecker)
         register(project, OverriddenKotlinNativeHomeChecker)
         register(project, ComposePluginSuggestApplyChecker)
-        register(project, AndroidPublicationNotConfiguredChecker)
         register(project, KonanHomeConflictDeclarationChecker)
         register(project, KmpPartiallyResolvedDependenciesChecker)
         register(project, TestApiDependenciesChecker)
@@ -211,7 +206,5 @@ internal fun Project.registerKotlinPluginExtensions() {
 private val Project.isMultiplatform get() = multiplatformExtensionOrNull != null
 
 private val Project.isJvm get() = kotlinJvmExtensionOrNull != null
-
-private val Project.isAndroid get() = kotlinExtension is KotlinAndroidProjectExtension
 
 private val Project.useNonPackedKlibs get() = kotlinPropertiesProvider.useNonPackedKlibs

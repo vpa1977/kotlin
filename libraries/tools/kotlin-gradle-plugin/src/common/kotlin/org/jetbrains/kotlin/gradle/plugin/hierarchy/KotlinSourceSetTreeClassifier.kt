@@ -10,7 +10,6 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import org.jetbrains.kotlin.gradle.plugin.KotlinHierarchyTemplate
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
 import org.jetbrains.kotlin.gradle.plugin.awaitFinalValue
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinJvmAndroidCompilationFactory
 import org.jetbrains.kotlin.tooling.core.extrasLazyProperty
 
 /**
@@ -114,7 +113,6 @@ internal suspend fun KotlinSourceSetTreeClassifier.classify(compilation: KotlinC
  * Returns the classifier configured for a given compilation.
  * This is writable, as Android requires overwriting of this default behaviour.
  *
- * - The KGP maintained target will set the classifier within the [KotlinJvmAndroidCompilationFactory]
  * - The external Android target will set this classifier within the 'createCompilation'
  *
  * It is therefore safe to access this value as soon as a compilation is provided

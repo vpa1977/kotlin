@@ -32,9 +32,6 @@ import org.jetbrains.kotlin.gradle.internal.KOTLIN_BUILD_TOOLS_API_IMPL
 import org.jetbrains.kotlin.gradle.internal.KOTLIN_COMPILER_EMBEDDABLE
 import org.jetbrains.kotlin.gradle.internal.KOTLIN_MODULE_GROUP
 import org.jetbrains.kotlin.gradle.internal.attributes.setupAttributesMatchingStrategy
-import org.jetbrains.kotlin.gradle.internal.diagnostics.AgpCompatibilityCheck.runAgpCompatibilityCheckIfAgpIsApplied
-import org.jetbrains.kotlin.gradle.internal.diagnostics.AgpWithBuiltInKotlinAppliedCheck.runAgpWithBuiltInKotlinIfAppliedCheck
-import org.jetbrains.kotlin.gradle.internal.diagnostics.AgpWithBuiltInKotlinAppliedCheck.runKmpAgpWithBuiltInKotlinIfAppliedCheck
 import org.jetbrains.kotlin.gradle.internal.diagnostics.GradleCompatibilityCheck.runGradleCompatibilityCheck
 import org.jetbrains.kotlin.gradle.internal.diagnostics.KotlinCompilerEmbeddableCheck.checkCompilerEmbeddableInClasspath
 import org.jetbrains.kotlin.gradle.internal.properties.PropertiesBuildService
@@ -79,7 +76,6 @@ abstract class DefaultKotlinBasePlugin : KotlinBasePlugin {
         project.checkCompilerEmbeddableInClasspath()
         project.registerDefaultVariantImplementations()
         project.runGradleCompatibilityCheck()
-        project.runAgpCompatibilityCheckIfAgpIsApplied()
         BuildFinishedListenerService.registerIfAbsent(project)
         BuildSessionService.registerIfAbsent(project)
 
@@ -285,9 +281,6 @@ abstract class KotlinBasePluginWrapper : DefaultKotlinBasePlugin() {
         project.addPgpSignatureHelpers()
         project.addPomValidationHelpers()
         project.addSigningValidationHelpers()
-        if (projectExtensionClass == KotlinAndroidProjectExtension::class) project.runAgpWithBuiltInKotlinIfAppliedCheck()
-        if (projectExtensionClass == KotlinMultiplatformExtension::class) project.runKmpAgpWithBuiltInKotlinIfAppliedCheck()
-
         project.createKotlinExtension(projectExtensionClass).apply {
             coreLibrariesVersion = pluginVersion
         }
@@ -320,14 +313,6 @@ abstract class AbstractKotlinPluginWrapper : KotlinBasePluginWrapper() {
 
     override val projectExtensionClass: KClass<out KotlinJvmProjectExtension>
         get() = KotlinJvmProjectExtension::class
-}
-
-abstract class AbstractKotlinAndroidPluginWrapper : KotlinBasePluginWrapper() {
-    override fun getPlugin(project: Project): Plugin<Project> =
-        KotlinAndroidPlugin()
-
-    override val projectExtensionClass: KClass<out KotlinAndroidProjectExtension>
-        get() = KotlinAndroidProjectExtension::class
 }
 
 abstract class AbstractKotlinJsPluginWrapper : KotlinBasePluginWrapper() {

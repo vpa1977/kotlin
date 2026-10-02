@@ -30,10 +30,9 @@ import org.jetbrains.kotlin.gradle.tasks.locateOrRegisterTask
 import org.jetbrains.kotlin.gradle.tasks.withType
 import org.jetbrains.kotlin.gradle.utils.LazyResolvedConfigurationComponent
 import org.jetbrains.kotlin.gradle.utils.LazyResolvedConfigurationWithArtifacts
-import org.jetbrains.kotlin.gradle.utils.findAppliedAndroidPluginIdOrNull
 import org.jetbrains.kotlin.gradle.utils.future
 import org.jetbrains.kotlin.gradle.utils.isAllGradleProjectsEvaluated
-import org.jetbrains.kotlin.gradle.utils.multiplatformAndroidLibraryPluginId
+
 
 @DisableCachingByDefault(because = "This task is not intended for execution")
 internal abstract class KmpPartiallyResolvedDependenciesCheckerProjectsEvaluated : DefaultTask() {
@@ -91,9 +90,7 @@ internal object KmpPartiallyResolvedDependenciesChecker : KotlinGradleProjectChe
                         )
                     }
                 }
-                val isMultiplatformAndroidLibraryPluginApplied = project.pluginManager.hasPlugin(multiplatformAndroidLibraryPluginId)
-                val isAndroidPluginApplied =
-                    project.findAppliedAndroidPluginIdOrNull() != null || isMultiplatformAndroidLibraryPluginApplied
+                val isAndroidPluginApplied = false
                 /**
                  * AGP adds a checker that emits a diagnostic if a configuration is resolved before taskGraph.whenReady. Delay the check to
                  * execution in this case
@@ -115,7 +112,7 @@ internal object KmpPartiallyResolvedDependenciesChecker : KotlinGradleProjectChe
                 if (!project.isAllGradleProjectsEvaluated) {
                     return@configureEach
                 }
-                val isAndroidPluginApplied = project.findAppliedAndroidPluginIdOrNull() != null
+                val isAndroidPluginApplied = false
                 if (isAndroidPluginApplied) {
                     return@configureEach
                 }

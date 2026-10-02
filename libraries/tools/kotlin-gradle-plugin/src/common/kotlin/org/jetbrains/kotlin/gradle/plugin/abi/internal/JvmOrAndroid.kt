@@ -27,16 +27,6 @@ internal fun AbiValidationExtension.finalizeJvmVariant(
 }
 
 
-/**
- * Finalizes the configuration of the report variant for the Android version of the Kotlin Gradle plugin.
- */
-internal fun AbiValidationExtension.finalizeAndroidVariant(
-    project: Project,
-    target: KotlinTarget,
-) {
-    finalizeVariant(project, binariesSource.get(), ANDROID_RELEASE_BUILD_TYPE, target)
-}
-
 private fun finalizeVariant(
     project: Project,
     binariesSource: BinariesSource,

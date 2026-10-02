@@ -167,8 +167,6 @@ private class KotlinHierarchyBuilderImpl(
                 (it is KotlinWithJavaTarget<*, *> && it.platformType == KotlinPlatformType.jvm)
     }
 
-    override fun withAndroidTarget() = withTargets { it is KotlinAndroidTarget }
-
     override fun withAndroidNativeX64() = withTargets {
         it is KotlinNativeTarget && it.konanTarget == KonanTarget.ANDROID_X64
     }

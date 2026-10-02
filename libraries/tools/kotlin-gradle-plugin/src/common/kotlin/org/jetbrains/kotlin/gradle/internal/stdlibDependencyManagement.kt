@@ -15,13 +15,9 @@ import org.jetbrains.kotlin.gradle.dsl.*
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinAndroidTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.internal
 import org.jetbrains.kotlin.gradle.plugin.mpp.isTest
 import org.jetbrains.kotlin.gradle.plugin.sources.KotlinDependencyScope
-import org.jetbrains.kotlin.gradle.plugin.sources.android.AndroidBaseSourceSetName
-import org.jetbrains.kotlin.gradle.plugin.sources.android.AndroidVariantType
-import org.jetbrains.kotlin.gradle.plugin.sources.android.androidSourceSetInfoOrNull
 import org.jetbrains.kotlin.gradle.plugin.sources.sourceSetDependencyConfigurationByScope
 import org.jetbrains.kotlin.gradle.plugin.statistics.KotlinStdlibConfigurationMetrics
 import org.jetbrains.kotlin.gradle.targets.js.npm.SemVer
@@ -102,9 +98,7 @@ private fun KotlinTarget.addStdlibDependency(
 ) {
     compilations.configureEach { compilation ->
         compilation.internal.kotlinSourceSets.forAll { kotlinSourceSet ->
-            val scope = if (compilation.isTest() ||
-                (this is KotlinAndroidTarget && kotlinSourceSet.isRelatedToAndroidTestSourceSet())
-            ) {
+            val scope = if (compilation.isTest()) {
                 KotlinDependencyScope.IMPLEMENTATION_SCOPE
             } else {
                 KotlinDependencyScope.API_SCOPE
@@ -171,15 +165,7 @@ internal fun KotlinPlatformType.stdlibPlatformType(
     isVersionWithGradleMetadata: Boolean,
 ): String? = when (this) {
     KotlinPlatformType.jvm -> if (isVersionWithGradleMetadata) KOTLIN_STDLIB_MODULE_NAME else KOTLIN_STDLIB_JDK8_MODULE_NAME
-    KotlinPlatformType.androidJvm -> {
-        if (kotlinTarget is KotlinAndroidTarget &&
-            kotlinSourceSet.androidSourceSetInfoOrNull?.androidSourceSetName == AndroidBaseSourceSetName.Main.name
-        ) {
-            if (isVersionWithGradleMetadata) KOTLIN_ANDROID_JVM_STDLIB_MODULE_NAME else KOTLIN_STDLIB_JDK8_MODULE_NAME
-        } else {
-            null
-        }
-    }
+    KotlinPlatformType.androidJvm -> null
 
     KotlinPlatformType.js -> if (isVersionWithGradleMetadata) KOTLIN_STDLIB_MODULE_NAME else KOTLIN_STDLIB_JS_MODULE_NAME
     KotlinPlatformType.wasm -> KOTLIN_STDLIB_MODULE_NAME
@@ -188,15 +174,8 @@ internal fun KotlinPlatformType.stdlibPlatformType(
         if (isVersionWithGradleMetadata) KOTLIN_STDLIB_MODULE_NAME else KOTLIN_STDLIB_COMMON_MODULE_NAME
 }
 
-private val androidTestVariants = setOf(AndroidVariantType.UnitTest, AndroidVariantType.InstrumentedTest)
-
 private val kotlin180Version = SemVer(1.toBigInteger(), 8.toBigInteger(), 0.toBigInteger())
 private val kotlin1920Version = SemVer(1.toBigInteger(), 9.toBigInteger(), 20.toBigInteger())
-
-private fun KotlinSourceSet.isRelatedToAndroidTestSourceSet(): Boolean {
-    val androidVariant = androidSourceSetInfoOrNull?.androidVariantType ?: return false
-    return androidVariant in androidTestVariants
-}
 
 internal val stdlibModules = setOf(
     KOTLIN_STDLIB_COMMON_MODULE_NAME,

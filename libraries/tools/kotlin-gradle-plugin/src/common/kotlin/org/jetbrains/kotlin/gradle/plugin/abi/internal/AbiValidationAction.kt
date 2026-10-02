@@ -32,12 +32,6 @@ internal val AbiValidationSetupAction = KotlinProjectSetupCoroutine {
             extension.abiValidation.finalizeJvmVariant(this, target)
         }
 
-        kotlinAndroidExtensionOrNull != null -> {
-            val extension = kotlinAndroidExtension
-            val target = extension.target
-            extension.abiValidation.finalizeAndroidVariant(this, target)
-        }
-
         multiplatformExtensionOrNull != null -> {
             val extension = multiplatformExtension
             val targets = extension.awaitTargets()

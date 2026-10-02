@@ -79,8 +79,7 @@ class SubpluginEnvironment(
         configureKotlinTask: (KotlinCompilationTask<*>) -> Unit,
     ) {
         if (kotlinCompilation is KotlinJvmCompilation ||
-            kotlinCompilation is KotlinWithJavaCompilation<*, *> ||
-            kotlinCompilation is KotlinJvmAndroidCompilation
+            kotlinCompilation is KotlinWithJavaCompilation<*, *>
         ) {
             whenKaptEnabled {
                 @Suppress("UNCHECKED_CAST")
@@ -108,24 +107,14 @@ internal fun addCompilationSourcesToExternalCompileTask(
     compilation: KotlinCompilation<*>,
     task: TaskProvider<out AbstractKotlinCompileTool<*>>
 ) {
-    if (compilation is KotlinJvmAndroidCompilation && compilation.androidVariant != null) {
-        compilation.androidVariant.forEachKotlinSourceDirectorySet(compilation.project) { sourceSet ->
-            task.configure { it.source(sourceSet) }
-        }
-        compilation.androidVariant.forEachJavaSourceDir { sources ->
-            task.configure { it.source(sources.dir) }
-        }
-    } else {
-        task.configure { taskInstance ->
-            compilation.allKotlinSourceSets.forEach { sourceSet -> taskInstance.source(sourceSet.defaultImpl.allKotlin) }
-        }
+    task.configure { taskInstance ->
+        compilation.allKotlinSourceSets.forEach { sourceSet -> taskInstance.source(sourceSet.defaultImpl.allKotlin) }
     }
 }
 
 
 internal fun findJavaTaskForKotlinCompilation(compilation: KotlinCompilation<*>): TaskProvider<out JavaCompile>? =
     when (compilation) {
-        is KotlinJvmAndroidCompilation -> compilation.compileJavaTaskProvider
         is KotlinWithJavaCompilation<*, *> -> compilation.compileJavaTaskProvider
         is KotlinJvmCompilation -> compilation.compileJavaTaskProvider // may be null for Kotlin-only JVM target in MPP
         else -> null

@@ -16,7 +16,6 @@ import org.jetbrains.kotlin.gradle.plugin.PropertiesProvider.Companion.kotlinPro
 import org.jetbrains.kotlin.gradle.plugin.mpp.AbstractKotlinNativeCompilation
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinSharedNativeCompilation
 import org.jetbrains.kotlin.gradle.plugin.mpp.compilationImpl.factory.KotlinCompilationImplFactory
-import org.jetbrains.kotlin.gradle.plugin.sources.android.androidSourceSetInfoOrNull
 import org.jetbrains.kotlin.gradle.plugin.sources.awaitPlatformCompilations
 import org.jetbrains.kotlin.gradle.plugin.sources.defaultImpl
 import org.jetbrains.kotlin.gradle.plugin.sources.getVisibleSourceSetsFromAssociateCompilations
@@ -42,17 +41,9 @@ internal object KotlinCompilationK2MultiplatformConfigurator : KotlinCompilation
             if (compileTask !is K2MultiplatformCompilationTask) return@configureEach
 
             /**
-             * Returns fragment name of [this]
-             * by default it is name of [KotlinSourceSet] but for android it should name of compilation's default source set.
-             * i.e. all android-specific source sets (fragments) should be combined into one.
-             * See KT-62508 for detailed explanation
+             * Returns fragment name of [this]: name of the [KotlinSourceSet]
              */
-            fun KotlinSourceSet.fragmentName(): String =
-                if (androidSourceSetInfoOrNull != null) {
-                    compilation.defaultSourceSet.name
-                } else {
-                    name
-                }
+            fun KotlinSourceSet.fragmentName(): String = name
 
             compileTask.multiplatformStructure.refinesEdges.set(compilation.project.provider {
                 if (!compileTask.compilerOptions.usesK2.get()) return@provider emptyList()

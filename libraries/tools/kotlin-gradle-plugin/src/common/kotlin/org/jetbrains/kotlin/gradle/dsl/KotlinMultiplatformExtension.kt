@@ -335,17 +335,6 @@ internal fun <T : KotlinTarget> DefaultKotlinTargetContainerWithPresetFunctions.
         }
 
         else -> {
-            if (targetName == "android" &&
-                targets.findByName(targetName) != null &&
-                project.plugins.hasPlugin("com.android.kotlin.multiplatform.library")) {
-                // FATAL
-                project.reportDiagnosticOncePerBuild(
-                    KotlinToolingDiagnostics.KMPAndroidTargetIsIncompatibleWithTheNewAgpKMPPlugin(
-                        IllegalStateException("Invalid KMP 'androidTarget' target instantiation")
-                    )
-                )
-            }
-
             // FIXME: KT-71529 - check if this diagnostic is actually reachable and cover with tests or remove
             throw InvalidUserCodeException(
                 "The target '$targetName' already exists, but it was not created with the '${targetPreset.name}' preset. " +

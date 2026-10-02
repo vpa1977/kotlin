@@ -171,7 +171,7 @@ abstract class KotlinJvmTarget @Inject constructor(
          */
         val trace = Throwable()
         project.launchInStage(AfterFinaliseDsl) check@{
-            val androidPluginId = project.findAppliedAndroidPluginIdOrNull() ?: return@check
+            val androidPluginId = "dummy Plugin"
             project.reportDiagnostic(KotlinToolingDiagnostics.JvmWithJavaIsIncompatibleWithAndroid(androidPluginId, trace))
         }
 

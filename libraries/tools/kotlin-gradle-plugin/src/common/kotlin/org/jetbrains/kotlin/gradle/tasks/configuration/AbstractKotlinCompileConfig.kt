@@ -18,7 +18,6 @@ import org.jetbrains.kotlin.gradle.dsl.topLevelExtension
 import org.jetbrains.kotlin.gradle.plugin.*
 import org.jetbrains.kotlin.gradle.plugin.PropertiesProvider.Companion.kotlinPropertiesProvider
 import org.jetbrains.kotlin.gradle.plugin.internal.BuildIdService
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinJvmAndroidCompilation
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinMetadataTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.internal
 import org.jetbrains.kotlin.gradle.tasks.AbstractKotlinCompile
@@ -129,13 +128,7 @@ private fun KotlinCompilationInfo.explicitApiMode(): Provider<ExplicitApiMode> =
     val compilation = tcs.compilation
     val isCommonCompilation = compilation.target is KotlinMetadataTarget
 
-    val androidCompilation = tcs.compilation as? KotlinJvmAndroidCompilation
-    val isMainAndroidCompilation = androidCompilation?.let {
-        @Suppress("DEPRECATION") val variant = it.androidVariant
-        variant != null && getTestedVariantData(variant) == null
-    } == true
-
-    if (isMain || isCommonCompilation || isMainAndroidCompilation) {
+    if (isMain || isCommonCompilation) {
         project.topLevelExtension.explicitApi
     } else {
         ExplicitApiMode.Disabled

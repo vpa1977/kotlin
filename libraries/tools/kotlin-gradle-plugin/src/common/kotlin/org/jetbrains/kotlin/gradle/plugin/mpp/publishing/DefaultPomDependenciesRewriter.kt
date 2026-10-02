@@ -15,7 +15,6 @@ import org.gradle.api.provider.Provider
 import org.jetbrains.kotlin.gradle.plugin.KotlinTargetComponent
 import org.jetbrains.kotlin.gradle.plugin.internal.KotlinProjectSharedDataProvider
 import org.jetbrains.kotlin.gradle.plugin.internal.kotlinSecondaryVariantsDataSharing
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinJvmAndroidCompilation
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinUsageContext.MavenScope
 import org.jetbrains.kotlin.gradle.plugin.mpp.internal
 import org.jetbrains.kotlin.gradle.utils.lastExternalVariantOrSelf
@@ -105,14 +104,6 @@ private fun collectProjectsPublicationCoordinatesFromDependencies(
             val compilation = usage.compilation
             val dependenciesConfiguration = project.configurations.getByName(
                 when (compilation) {
-                    is KotlinJvmAndroidCompilation -> {
-                        // TODO handle Android configuration names in a general way once we drop AGP < 3.0.0
-                        val variantName = compilation.name
-                        when (mavenScope) {
-                            MavenScope.COMPILE -> variantName + "CompileClasspath"
-                            MavenScope.RUNTIME -> variantName + "RuntimeClasspath"
-                        }
-                    }
                     else -> when (mavenScope) {
                         MavenScope.COMPILE -> compilation.compileDependencyConfigurationName
                         MavenScope.RUNTIME -> compilation.runtimeDependencyConfigurationName ?: return@mapNotNull null

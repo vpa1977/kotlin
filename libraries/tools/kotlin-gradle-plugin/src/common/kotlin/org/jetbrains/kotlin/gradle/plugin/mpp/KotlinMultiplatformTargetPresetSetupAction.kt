@@ -21,7 +21,6 @@ internal val KotlinMultiplatformTargetPresetAction = KotlinProjectSetupAction {
         add(KotlinJsIrTargetPreset(project))
         add(KotlinWasmTargetPreset(project, KotlinWasmTargetType.JS))
         add(KotlinWasmTargetPreset(project, KotlinWasmTargetType.WASI))
-        add(project.objects.newInstance(KotlinAndroidTargetPreset::class.java, project))
         add(KotlinJvmWithJavaTargetPreset(project))
 
         // Note: modifying these sets should also be reflected in the DSL code generator, see 'presetEntries.kt'

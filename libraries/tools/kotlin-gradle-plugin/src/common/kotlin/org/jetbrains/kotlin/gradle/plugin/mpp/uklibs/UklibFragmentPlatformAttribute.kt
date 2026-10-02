@@ -8,7 +8,6 @@ package org.jetbrains.kotlin.gradle.plugin.mpp.uklibs
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinAndroidTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinMetadataTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.targets.js.KotlinWasmTargetType
@@ -72,16 +71,6 @@ internal val KotlinTarget.uklibFragmentPlatformAttribute: UklibFragmentPlatformA
     get() {
         if (this is KotlinMetadataTarget) {
             return UklibFragmentPlatformAttribute.FailOnConsumptionAndPublication(this)
-        }
-
-        /**
-         * FIXME: Android configurations currently do not resolve consistently with the targets below
-         * FIXME: Request jvm transform in Android?
-         */
-        if (this is KotlinAndroidTarget) {
-            return UklibFragmentPlatformAttribute.ConsumeInMetadataCompilationsAndPublishInUmanifest(
-                UklibTargetFragmentAttribute.android.name
-            )
         }
 
         val supportedUklibTarget = when (this) {

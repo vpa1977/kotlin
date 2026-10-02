@@ -14,12 +14,6 @@ internal fun <T> Project.whenEvaluated(fn: Project.() -> T) {
         return
     }
 
-    /** If there's already an Android plugin applied, just dispatch the action to `afterEvaluate`, it gets executed after AGP's actions */
-    if (androidPluginIds.any { pluginManager.hasPlugin(it) }) {
-        afterEvaluate { fn() }
-        return
-    }
-
     val isDispatchedAfterAndroid = AtomicBoolean(false)
 
     /**
@@ -31,9 +25,6 @@ internal fun <T> Project.whenEvaluated(fn: Project.() -> T) {
     val afterAndroidDispatchQueue = project.extensions.extraProperties.getOrPut("org.jetbrains.kotlin.whenEvaluated") {
         val queue = mutableListOf<() -> Unit>()
         // Trigger the actions on any plugin applied; the actions themselves ensure that they only dispatch the fn once.
-        androidPluginIds.forEach { id ->
-            pluginManager.withPlugin(id) { queue.forEach { it() } }
-        }
         queue
     }
     afterAndroidDispatchQueue.add {

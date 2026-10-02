@@ -27,7 +27,6 @@ import org.jetbrains.kotlin.gradle.dsl.*
 import org.jetbrains.kotlin.gradle.execution.KotlinAggregateExecutionSource
 import org.jetbrains.kotlin.gradle.internal.KotlinTestJvmFramework.*
 import org.jetbrains.kotlin.gradle.plugin.*
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinJvmAndroidCompilation
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinWithJavaTarget
 import org.jetbrains.kotlin.gradle.plugin.sources.KotlinDependencyScope
 import org.jetbrains.kotlin.gradle.plugin.sources.sourceSetDependencyConfigurationByScope
@@ -171,12 +170,6 @@ private fun KotlinCompilation<*>.kotlinTestCapabilityForJvmSourceSet(
         compilationTarget is KotlinWithJavaTarget<*, *> &&
                 name == KotlinCompilation.TEST_COMPILATION_NAME ->
             listOfNotNull(tasks.locateTask(compilationTarget.testTaskName))
-
-        this is KotlinJvmAndroidCompilation -> when (androidVariant) {
-            is DeprecatedAndroidUnitTestVariant -> listOfNotNull(tasks.locateTask(lowerCamelCaseName("test", androidVariant.name)))
-            is DeprecatedAndroidTestVariant -> listOfNotNull(androidVariant.connectedInstrumentTestProvider)
-            else -> emptyList()
-        }
 
         else -> emptyList()
     }

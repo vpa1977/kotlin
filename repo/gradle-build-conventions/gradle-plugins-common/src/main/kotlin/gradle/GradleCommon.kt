@@ -144,7 +144,6 @@ fun Project.excludeGradleCommonDependencies(sourceSet: SourceSet) {
 }
 
 private val internalPlugins = setOf(
-    "android-test-fixes",
     "gradle-warnings-detector",
     "kotlin-compiler-args-properties",
 )
@@ -771,12 +770,11 @@ fun Project.addBomCheckTask() {
         description = "Check if project is added into Kotlin Gradle Plugins bom"
 
         val bomBuildFile = project(":kotlin-gradle-plugins-bom").projectDir.resolve("build.gradle.kts")
-        val exceptions = listOf(
-            project(":gradle:android-test-fixes").path,
-            project(":gradle:gradle-warnings-detector").path,
-            project(":gradle:kotlin-compiler-args-properties").path,
-            project(":kotlin-gradle-build-metrics").path,
-            project(":kotlin-gradle-statistics").path,
+        val exceptions = listOfNotNull(
+            project.findProject(":gradle:gradle-warnings-detector")?.path,
+            project.findProject(":gradle:kotlin-compiler-args-properties")?.path,
+            project.findProject(":kotlin-gradle-build-metrics")?.path,
+            project.findProject(":kotlin-gradle-statistics")?.path,
         )
         val projectPath = this@addBomCheckTask.path
 

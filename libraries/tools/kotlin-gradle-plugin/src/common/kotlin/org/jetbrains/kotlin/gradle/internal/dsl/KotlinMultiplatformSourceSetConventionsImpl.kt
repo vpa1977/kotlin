@@ -187,10 +187,6 @@ internal object KotlinMultiplatformSourceSetConventionsImpl : KotlinMultiplatfor
     override val NamedDomainObjectContainer<KotlinSourceSet>.watchosX64Test by KotlinSourceSetConvention
 
     // endregion
-
-    override val NamedDomainObjectContainer<KotlinSourceSet>.androidMain by KotlinSourceSetConvention
-    override val NamedDomainObjectContainer<KotlinSourceSet>.androidUnitTest by KotlinSourceSetConvention
-    override val NamedDomainObjectContainer<KotlinSourceSet>.androidInstrumentedTest by KotlinSourceSetConvention
 }
 
 

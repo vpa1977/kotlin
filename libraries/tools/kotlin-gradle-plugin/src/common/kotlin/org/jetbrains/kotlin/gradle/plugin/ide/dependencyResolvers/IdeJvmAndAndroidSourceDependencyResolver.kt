@@ -24,8 +24,6 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.MetadataDependencyResolution
 import org.jetbrains.kotlin.gradle.plugin.mpp.isMain
 import org.jetbrains.kotlin.gradle.plugin.mpp.projectDependency
 import org.jetbrains.kotlin.gradle.plugin.sources.DefaultKotlinSourceSet
-import org.jetbrains.kotlin.gradle.plugin.sources.android.AndroidVariantType
-import org.jetbrains.kotlin.gradle.plugin.sources.android.type
 import org.jetbrains.kotlin.gradle.plugin.sources.internal
 import org.jetbrains.kotlin.gradle.utils.setAttributeProvider
 import org.jetbrains.kotlin.gradle.utils.toMap
@@ -133,16 +131,11 @@ internal class IdeJvmAndAndroidSourceDependencyResolver(
     private fun isJvmAndAndroidMain(sourceSet: KotlinSourceSet): Boolean {
         if (!isJvmAndAndroid(sourceSet)) return false
         return sourceSet.internal.compilations.filter { it.platformType != KotlinPlatformType.common }.all { compilation ->
-            isJvmMain(compilation) || isAndroidMain(compilation)
+            isJvmMain(compilation)
         }
     }
 
     private fun isJvmMain(compilation: KotlinCompilation<*>): Boolean {
         return compilation.platformType == KotlinPlatformType.jvm && compilation.isMain()
-    }
-
-    private fun isAndroidMain(compilation: KotlinCompilation<*>): Boolean {
-        @Suppress("DEPRECATION")
-        return compilation is KotlinJvmAndroidCompilation && compilation.androidVariant?.type == AndroidVariantType.Main
     }
 }

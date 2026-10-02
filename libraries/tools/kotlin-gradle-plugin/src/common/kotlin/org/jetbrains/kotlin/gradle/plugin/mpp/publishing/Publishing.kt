@@ -125,10 +125,6 @@ private fun createTargetPublications(project: Project, publishing: PublishingExt
             /** Publication for [KotlinMetadataTarget] is created in [createRootPublication] */
             if (kotlinTarget is KotlinMetadataTarget) return@all
             when (kotlinTarget) {
-                // Android targets have their variants created in afterEvaluate; TODO handle this better?
-                is KotlinAndroidTarget -> project.whenEvaluated {
-                    kotlinTarget.createTargetSpecificMavenPublications(publishing.publications)
-                }
                 is KotlinNativeTarget -> {
                     project.launch {
                         val crossCompilationSupported = kotlinTarget.crossCompilationOnCurrentHostSupported.await()

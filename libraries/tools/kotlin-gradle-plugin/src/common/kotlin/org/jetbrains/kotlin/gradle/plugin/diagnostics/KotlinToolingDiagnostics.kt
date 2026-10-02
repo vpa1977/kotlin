@@ -29,7 +29,6 @@ import org.jetbrains.kotlin.gradle.plugin.diagnostics.ToolingDiagnostic.Severity
 import org.jetbrains.kotlin.gradle.plugin.diagnostics.checkers.UnresolvedKmpDependency.ResolvedVariant
 import org.jetbrains.kotlin.gradle.plugin.diagnostics.checkers.UnresolvedKmpDependency.UnresolvedComponent
 import org.jetbrains.kotlin.gradle.plugin.mpp.uklibs.Uklib
-import org.jetbrains.kotlin.gradle.plugin.sources.android.multiplatformAndroidSourceSetLayoutV2
 import org.jetbrains.kotlin.gradle.targets.jvm.JAVA_TEST_FIXTURES_PLUGIN_ID
 import org.jetbrains.kotlin.gradle.utils.appendLine
 import org.jetbrains.kotlin.gradle.utils.prettyName
@@ -95,20 +94,20 @@ internal object KotlinToolingDiagnostics {
                             ", "
                         ) { "'${it.name}'" }
                     }.
-                    
+
                     For example:
-                    
+
                     kotlin {
                         jvm()
                         linuxArm64()
                         linuxX64()
-        
+
                         // customLinuxMain is used in compilation of "linuxArm64" and "linuxX64"
                         val customLinuxMain by sourceSets.creating
                         sourceSets.linuxArm64Main.get().dependsOn(customLinuxMain)
                         sourceSets.linuxX64Main.get().dependsOn(customLinuxMain)
-        
-                        // commonMain is used in compilation of all targets. This means the following dependsOn must exist for a Uklib to be publishable 
+
+                        // commonMain is used in compilation of all targets. This means the following dependsOn must exist for a Uklib to be publishable
                         customLinuxMain.dependsOn(sourceSets.commonMain.get())
                     }
                     """.trimIndent()
@@ -473,7 +472,7 @@ internal object KotlinToolingDiagnostics {
                     """
                     The Kotlin/Native cache has been disabled for the $buildType binary '$binaryName' on target '$targetName'.
                     Build times for '$targetName' ($buildType) may be slower as a result.
-                    
+
                     Reason: $reason
                     """.trimIndent()
                 }
@@ -578,13 +577,13 @@ internal object KotlinToolingDiagnostics {
                     """
                     Kotlin Source Set '$unexpectedSourceSetRoot' is included to '${kotlinCompilation.name}' compilation of '${kotlinCompilation.target.name}' target,
                     but it doesn't depend on '$expectedRoot'.
-                    
+
                     Please remove '$unexpectedSourceSetRoot' and include its sources to the compilation's default source set:
-                    
+
                         kotlin.sourceSets["${kotlinCompilation.defaultSourceSet.name}"].kotlin.srcDir() // <-- pass sources directory of '$unexpectedSourceSetRoot'
-                    
+
                     Or provide explicit dependency if the solution above is not applicable
-                    
+
                         kotlin.sourceSets["$unexpectedSourceSetRoot"].dependsOn($expectedRoot)
                     """.trimIndent()
                 }
@@ -604,14 +603,14 @@ internal object KotlinToolingDiagnostics {
                     """
                     Kotlin Source Set '$unexpectedSourceSetRoot' is included in compilations of Kotlin Targets: ${targetNames.joinToString(", ") { "'$it'" }}
                     but it doesn't depend on '$expectedRoot'
-                    
+
                     Please remove '$unexpectedSourceSetRoot' and include its sources to one of the default source set: https://kotl.in/hierarchy-template
                     For example:
-    
+
                         kotlin.sourceSets.commonMain.kotlin.srcDir() // <-- pass here sources directory
-    
+
                     Or add explicit dependency if the solution above is not applicable:
-    
+
                         kotlin.sourceSets["$unexpectedSourceSetRoot"].dependsOn($expectedRoot)
                     """.trimIndent()
                 }
@@ -628,11 +627,11 @@ internal object KotlinToolingDiagnostics {
                     Kotlin Source Sets: ${sourceSetRoots.joinToString(", ") { "'$it'" }}
                     are included to '${kotlinCompilation.name}' compilation of '${kotlinCompilation.target.name}' target.
                     However, they have no common source set root between them.
-                    
+
                     Please remove these kotlin source sets and include their source directories to the compilation's default source set.
-                    
+
                         kotlin.sourceSets["${kotlinCompilation.defaultSourceSet.name}"].kotlin.srcDir() // <-- pass sources directories here
-                    
+
                     Or, if the solution above is not applicable, specify `dependsOn` edges between these source sets so that there are no multiple roots.
                     """.trimIndent()
                 }
@@ -651,7 +650,7 @@ internal object KotlinToolingDiagnostics {
             title("Android Gradle Plugin Version Incompatible with Source Set Layout V2")
                 .description {
                     """
-                    ${multiplatformAndroidSourceSetLayoutV2.name} requires Android Gradle Plugin Version >= $minimumRequiredAgpVersion.
+                    requires Android Gradle Plugin Version >= $minimumRequiredAgpVersion.
                     Found $currentAgpVersion
                     """.trimIndent()
                 }
@@ -668,7 +667,7 @@ internal object KotlinToolingDiagnostics {
                     """
                     Usage of 'Android Style' source directory $androidStyleSourceDirInUse is deprecated.
                     Use $kotlinStyleSourceDirToUse instead.
-                    
+
                     To suppress this warning: put the following in your gradle.properties:
                     ${PropertiesProvider.PropertyNames.KOTLIN_MPP_ANDROID_SOURCE_SET_LAYOUT_ANDROID_STYLE_NO_WARN}=true
                     """.trimIndent()
@@ -714,7 +713,7 @@ internal object KotlinToolingDiagnostics {
 
                     This warning can be suppressed in 'gradle.properties':
                         ${KOTLIN_SUPPRESS_GRADLE_PLUGIN_WARNINGS_PROPERTY}=$id
-                    
+
                     """.trimIndent()
                 }
                 .solution {
@@ -793,7 +792,7 @@ internal object KotlinToolingDiagnostics {
                         id("$androidPluginId")
                         kotlin("multiplatform")
                     }
-                    
+
                     kotlin {
                         androidTarget() // <-- please register this Android target
                     }
@@ -815,12 +814,12 @@ internal object KotlinToolingDiagnostics {
                     ```
                     plugins {
                         kotlin("multiplatform")
-                    
+
                         /* Android Gradle Plugin missing */
                         id("com.android.library") /* <- Android Gradle Plugin for libraries */
                         id("com.android.application") <* <- Android Gradle Plugin for applications */
                     }
-                    
+
                     kotlin {
                         androidTarget() /* <- requires Android Gradle Plugin to be applied */
                     }
@@ -854,17 +853,17 @@ internal object KotlinToolingDiagnostics {
                 .description {
                     """
                     The project is using Kotlin Multiplatform with hierarchical structure and disabled 'cinterop commonization'
-                    
+
                     'cinterop commonization' can be enabled in your 'gradle.properties'
                     kotlin.mpp.enableCInteropCommonization=true
-                    
+
                     To hide this message, add to your 'gradle.properties'
-                    ${PropertiesProvider.PropertyNames.KOTLIN_MPP_ENABLE_CINTEROP_COMMONIZATION}.nowarn=true 
-                
-                    The following source sets are affected: 
+                    ${PropertiesProvider.PropertyNames.KOTLIN_MPP_ENABLE_CINTEROP_COMMONIZATION}.nowarn=true
+
+                    The following source sets are affected:
                     $affectedSourceSetsString
-                    
-                    The following cinterops are affected: 
+
+                    The following cinterops are affected:
                     $affectedCinteropsString
                     """.trimIndent()
                 }
@@ -1078,14 +1077,14 @@ internal object KotlinToolingDiagnostics {
                     .description {
                         """
                         Accessed '$sourceSet', but $expectedTargetName target used a custom name '${target.name}' (expected '$expectedTargetName'):
-                        
+
                         Replace:
                         ```
                         kotlin {
                             $expectedTargetName("${target.name}") /* <- custom name used */
                         }
                         ```
-                        
+
                         With:
                         ```
                         kotlin {
@@ -1110,9 +1109,9 @@ internal object KotlinToolingDiagnostics {
                         Accessed '$sourceSet' without the registering the $expectedTargetName target:
                         kotlin {
                             $expectedTargetName() /* <- register the '$expectedTargetName' target */
-                        
+
                             sourceSets.${sourceSet.name}.dependencies {
-                        
+
                             }
                         }
                         """.trimIndent()
@@ -1130,18 +1129,18 @@ internal object KotlinToolingDiagnostics {
                     """
                     Accessed '$sourceSet' without registering the Android target
                     Please apply a given Android Gradle plugin (e.g. com.android.library) and register an Android target
-                    
+
                     Example using the 'com.android.library' plugin:
-                    
+
                         plugins {
                             id("com.android.library")
                         }
-                    
+
                         android {
                             namespace = "org.sample.library"
                             compileSdk = 33
                         }
-                    
+
                         kotlin {
                             androidTarget() /* <- register the androidTarget */
                         }
@@ -1164,10 +1163,10 @@ internal object KotlinToolingDiagnostics {
                         iosX64()
                         iosArm64()
                         iosSimulatorArm64()
-                    
+
                         /* Use convention */
                         sourceSets.${sourceSet.name}.dependencies {
-                    
+
                         }
                     }
                     """.trimIndent()
@@ -1186,7 +1185,7 @@ internal object KotlinToolingDiagnostics {
                     The Default Kotlin Hierarchy Template was not applied to '${project.displayName}':
                     Explicit .dependsOn() edges were configured for the following source sets:
                     ${sourceSetsWithDependsOnEdges.toSet().map { it.name }}
-                    
+
                     Consider removing dependsOn-calls or disabling the default template by adding
                         '$KOTLIN_MPP_APPLY_DEFAULT_HIERARCHY_TEMPLATE=false'
                     to your gradle.properties
@@ -1209,7 +1208,7 @@ internal object KotlinToolingDiagnostics {
                     The Default Kotlin Hierarchy Template was not applied to '${project.displayName}':
                     Source sets created by the following targets will clash with source sets created by the template:
                     ${illegalTargetNamesUsed.toSet()}
-                    
+
                     Consider renaming the targets or disabling the default template by adding
                         '$KOTLIN_MPP_APPLY_DEFAULT_HIERARCHY_TEMPLATE=false'
                     to your gradle.properties
@@ -1275,7 +1274,7 @@ internal object KotlinToolingDiagnostics {
                     """
                     'withJava()' is not compatible with Android Plugins
                     Incompatible Android Plugin applied: '$androidPluginId'
-                    
+
                     kotlin {
                         jvm {
                             withJava() /* <- cannot be used when the Android Plugin is present */
@@ -1343,7 +1342,7 @@ internal object KotlinToolingDiagnostics {
                 .description {
                     """
                     Artifact $KOTLIN_MODULE_GROUP:$KOTLIN_BUILD_TOOLS_API_IMPL must have version aligned with the version of KGP when compilation via the Build Tools API is disabled.
-    
+
                     Expected version: $expectedVersion
                     Actual resolved version: ${actualVersion ?: "not found"}
                     """.trimIndent()
@@ -1361,8 +1360,8 @@ internal object KotlinToolingDiagnostics {
                     """
                     KotlinSourceSet with name '$nameOfRequestedSourceSet' not found:
                     The SourceSet requested ('$nameOfRequestedSourceSet') was renamed in Kotlin 1.9.20
-                    
-                    In order to migrate you might want to replace: 
+
+                    In order to migrate you might want to replace:
                     val wasmMain by getting -> val wasmJsMain by getting
                     val wasmTest by getting -> val wasmJsTest by getting
                     """.trimIndent()
@@ -1615,7 +1614,7 @@ internal object KotlinToolingDiagnostics {
                     Kotlin <-> Xcode compatibility issue:
                     The selected Xcode version ($xcodeVersionString) is higher than the maximum known to the Kotlin Gradle Plugin.
                     Stability in such configuration hasn't been tested, please report encountered issues to https://kotl.in/issue
-                    
+
                     Maximum tested Xcode version: $maxTested
                     """.trimIndent()
                 }
@@ -1804,7 +1803,7 @@ internal object KotlinToolingDiagnostics {
                 .description {
                     """
                     ${if (userScriptSandboxingEnabled) "You" else "BUILT_PRODUCTS_DIR is not accessible, probably you"} have sandboxing for user scripts enabled.
-                    
+
                     In your Xcode project, navigate to "Build Setting",
                     and under "Build Options" set "User script sandboxing" (ENABLE_USER_SCRIPT_SANDBOXING) to "NO".
                     Then, run "./gradlew --stop" to stop the Gradle daemon
@@ -1825,7 +1824,7 @@ internal object KotlinToolingDiagnostics {
                 .description {
                     """
                     Android Publication '$publicationName' for variant '$componentName' was not configured properly:
-                    
+
                     To avoid this warning, please create and configure Android publication variant with name '$componentName'.
                     Example:
                     ```
@@ -2260,10 +2259,10 @@ internal object KotlinToolingDiagnostics {
                 .description {
                     """
                         The source set '$sourceSetName' is already created and conflicts with the compilation '$compilationName'.
-                        
+
                         Instead of creating the source set '$sourceSetName' manually, consider creating the 'compilation' and resolving
                         the source set from there.
-                    
+
                         kotlin {
                             val compilation = $targetName().compilations.create("$compilationName")
                             val sourceSet = compilation.defaultSourceSet
