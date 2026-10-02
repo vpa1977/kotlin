@@ -227,11 +227,6 @@ interface KotlinHierarchyBuilder {
     fun withJvm()
 
     /**
-     * Only includes Kotlin's Android targets in this [group].
-     */
-    fun withAndroidTarget()
-
-    /**
      * Only includes Kotlin's Android/androidNativeX64 target in this [group].
      *
      * For more information, see [Native targets overview](https://kotlinlang.org/docs/native-target-support.html).

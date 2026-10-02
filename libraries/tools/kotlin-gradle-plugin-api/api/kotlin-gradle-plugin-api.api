@@ -166,16 +166,6 @@ public abstract interface class org/jetbrains/kotlin/gradle/dsl/KaptJavacOption 
 	public abstract fun option (Ljava/lang/String;Ljava/lang/String;)V
 }
 
-public abstract interface class org/jetbrains/kotlin/gradle/dsl/KotlinAndroidExtension : org/jetbrains/kotlin/gradle/dsl/HasConfigurableKotlinCompilerOptions, org/jetbrains/kotlin/gradle/dsl/KotlinBaseExtension {
-	public abstract fun getSourceSets ()Lorg/gradle/api/NamedDomainObjectContainer;
-	public abstract fun getTarget ()Lorg/jetbrains/kotlin/gradle/plugin/KotlinTarget;
-}
-
-public final class org/jetbrains/kotlin/gradle/dsl/KotlinAndroidExtension$DefaultImpls {
-	public static fun compilerOptions (Lorg/jetbrains/kotlin/gradle/dsl/KotlinAndroidExtension;Lkotlin/jvm/functions/Function1;)V
-	public static fun compilerOptions (Lorg/jetbrains/kotlin/gradle/dsl/KotlinAndroidExtension;Lorg/gradle/api/Action;)V
-}
-
 public abstract interface class org/jetbrains/kotlin/gradle/dsl/KotlinBaseExtension : org/jetbrains/kotlin/gradle/dsl/KotlinTopLevelExtension {
 }
 
@@ -422,8 +412,6 @@ public final class org/jetbrains/kotlin/gradle/dsl/KotlinMultiplatformCommonOpti
 
 public abstract interface class org/jetbrains/kotlin/gradle/dsl/KotlinMultiplatformSourceSetConventions {
 	public abstract fun dependencies (Lorg/gradle/api/NamedDomainObjectProvider;Lkotlin/jvm/functions/Function1;)V
-	public abstract fun getAndroidInstrumentedTest (Lorg/gradle/api/NamedDomainObjectContainer;)Lorg/gradle/api/NamedDomainObjectProvider;
-	public abstract fun getAndroidMain (Lorg/gradle/api/NamedDomainObjectContainer;)Lorg/gradle/api/NamedDomainObjectProvider;
 	public abstract fun getAndroidNativeArm32Main (Lorg/gradle/api/NamedDomainObjectContainer;)Lorg/gradle/api/NamedDomainObjectProvider;
 	public abstract fun getAndroidNativeArm32Test (Lorg/gradle/api/NamedDomainObjectContainer;)Lorg/gradle/api/NamedDomainObjectProvider;
 	public abstract fun getAndroidNativeArm64Main (Lorg/gradle/api/NamedDomainObjectContainer;)Lorg/gradle/api/NamedDomainObjectProvider;
@@ -434,7 +422,6 @@ public abstract interface class org/jetbrains/kotlin/gradle/dsl/KotlinMultiplatf
 	public abstract fun getAndroidNativeX64Test (Lorg/gradle/api/NamedDomainObjectContainer;)Lorg/gradle/api/NamedDomainObjectProvider;
 	public abstract fun getAndroidNativeX86Main (Lorg/gradle/api/NamedDomainObjectContainer;)Lorg/gradle/api/NamedDomainObjectProvider;
 	public abstract fun getAndroidNativeX86Test (Lorg/gradle/api/NamedDomainObjectContainer;)Lorg/gradle/api/NamedDomainObjectProvider;
-	public abstract fun getAndroidUnitTest (Lorg/gradle/api/NamedDomainObjectContainer;)Lorg/gradle/api/NamedDomainObjectProvider;
 	public abstract fun getAppleMain (Lorg/gradle/api/NamedDomainObjectContainer;)Lorg/gradle/api/NamedDomainObjectProvider;
 	public abstract fun getAppleTest (Lorg/gradle/api/NamedDomainObjectContainer;)Lorg/gradle/api/NamedDomainObjectProvider;
 	public abstract fun getCommonMain (Lorg/gradle/api/NamedDomainObjectContainer;)Lorg/gradle/api/NamedDomainObjectProvider;
@@ -1018,7 +1005,6 @@ public abstract interface class org/jetbrains/kotlin/gradle/plugin/KotlinHierarc
 	public abstract fun withAndroidNativeArm64 ()V
 	public abstract fun withAndroidNativeX64 ()V
 	public abstract fun withAndroidNativeX86 ()V
-	public abstract fun withAndroidTarget ()V
 	public abstract fun withApple ()V
 	public abstract fun withCompilations (Lkotlin/jvm/functions/Function1;)V
 	public abstract fun withIos ()V
@@ -1104,7 +1090,6 @@ public final class org/jetbrains/kotlin/gradle/plugin/KotlinJsCompilerTypeHolder
 public abstract interface class org/jetbrains/kotlin/gradle/plugin/KotlinJvmFactory {
 	public abstract fun addCompilerPluginDependency (Lorg/gradle/api/provider/Provider;)V
 	public abstract fun createCompilerJvmOptions ()Lorg/jetbrains/kotlin/gradle/dsl/KotlinJvmCompilerOptions;
-	public abstract fun createKotlinAndroidExtension ()Lorg/jetbrains/kotlin/gradle/dsl/KotlinAndroidExtension;
 	public abstract fun createKotlinJvmExtension ()Lorg/jetbrains/kotlin/gradle/dsl/KotlinJvmExtension;
 	public abstract fun getCompilerPlugins ()Lorg/gradle/api/file/FileCollection;
 	public abstract fun getKaptExtension ()Lorg/jetbrains/kotlin/gradle/dsl/KaptExtensionConfig;
