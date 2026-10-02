@@ -1,5 +1,3 @@
-import gradle.GradlePluginVariant
-
 plugins {
     id("gradle-plugin-dependency-configuration")
     id("org.jetbrains.kotlinx.binary-compatibility-validator")
@@ -28,11 +26,6 @@ tasks {
         inputJar.value(jar.flatMap { it.archiveFile })
     }
 }
-
-registerKotlinSourceForVersionRange(
-    GradlePluginVariant.GRADLE_MIN,
-    GradlePluginVariant.GRADLE_88,
-)
 
 generatedSourcesTask(
     taskName = "generateKotlinVersionConstant",
