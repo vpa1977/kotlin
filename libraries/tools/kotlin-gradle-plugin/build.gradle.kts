@@ -345,18 +345,6 @@ gradlePlugin {
                 }
             }
         }
-        create("kotlinAndroidPlugin") {
-            id = "org.jetbrains.kotlin.android"
-            description = "Kotlin Android plugin"
-            displayName = description
-            implementationClass = "org.jetbrains.kotlin.gradle.plugin.KotlinAndroidPluginWrapper"
-
-            compatibility {
-                features {
-                    configurationCache = true
-                }
-            }
-        }
         create("kotlinParcelizePlugin") {
             id = "org.jetbrains.kotlin.plugin.parcelize"
             description = "Kotlin Parcelize plugin"
