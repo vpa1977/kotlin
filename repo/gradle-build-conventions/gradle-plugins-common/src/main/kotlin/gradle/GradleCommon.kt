@@ -598,13 +598,7 @@ private fun Project.createGradlePluginVariant(
 
     dependencies {
         variantSourceSet.compileOnlyConfigurationName("org.jetbrains.kotlin:kotlin-stdlib:${GradlePluginVariant.GRADLE_MIN.bundledKotlinVersion}.0")
-        if (variant == GradlePluginVariant.GRADLE_813) {
-            // Workaround until 'dev.gradleplugins:gradle-api:8.13' will be published
-            variantSourceSet.compileOnlyConfigurationName("org.jetbrains.intellij.deps:gradle-api:${variant.gradleApiVersion}")
-            variantSourceSet.compileOnlyConfigurationName("javax.inject:javax.inject:1")
-        } else {
-            variantSourceSet.compileOnlyConfigurationName("dev.gradleplugins:gradle-api:${variant.gradleApiVersion}")
-        }
+        variantSourceSet.compileOnlyConfigurationName("dev.gradleplugins:gradle-api:${variant.gradleApiVersion}")
         if (this@createGradlePluginVariant.name !in testPlugins) {
             variantSourceSet.apiConfigurationName(project(":kotlin-gradle-plugin-api"))
         }
@@ -914,15 +908,8 @@ fun Project.createGradlePluginVariants(
     commonSourceSet: SourceSet,
     publishShadowedJar: Boolean,
 ) {
-    listOf(
-        GradlePluginVariant.GRADLE_80,
-        GradlePluginVariant.GRADLE_81,
-        GradlePluginVariant.GRADLE_82,
-        GradlePluginVariant.GRADLE_85,
-        GradlePluginVariant.GRADLE_86,
-        GradlePluginVariant.GRADLE_88,
-        GradlePluginVariant.GRADLE_811,
-        GradlePluginVariant.GRADLE_813,
+    // Only the default ('main') variant is published; no additional per-Gradle variants.
+    emptyListOf<GradlePluginVariant>(
     ).forEach { variant ->
         createGradlePluginVariant(
             variant = variant,

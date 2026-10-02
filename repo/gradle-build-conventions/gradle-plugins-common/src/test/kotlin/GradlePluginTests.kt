@@ -67,23 +67,6 @@ class GradlePluginTests {
             ),
         )
 
-        assertEquals(
-            listOf(
-                listOf("producerPlugin", "build", "classes", "java", "common"),
-                listOf("producerPlugin", "build", "classes", "kotlin", "common"),
-                listOf("producerPlugin", "build", "classes", "java", GradlePluginVariant.MIDDLE_GRADLE_VARIANT_FOR_TESTS.sourceSetName),
-                listOf("producerPlugin", "build", "classes", "kotlin", GradlePluginVariant.MIDDLE_GRADLE_VARIANT_FOR_TESTS.sourceSetName),
-                listOf("producerPluginDependency", "build", "classes", "java", "common"),
-                listOf("producerPluginDependency", "build", "classes", "kotlin", "common"),
-                listOf("producerPluginDependency", "build", "classes", "java", GradlePluginVariant.MIDDLE_GRADLE_VARIANT_FOR_TESTS.sourceSetName),
-                listOf("producerPluginDependency", "build", "classes", "kotlin", GradlePluginVariant.MIDDLE_GRADLE_VARIANT_FOR_TESTS.sourceSetName),
-            ),
-            consumerPlugin.actualCompilationClasspath(
-                variantSourceSetName = GradlePluginVariant.MIDDLE_GRADLE_VARIANT_FOR_TESTS.sourceSetName,
-                dependencyPathsToCheck = dependencyPathsToCheck,
-            ),
-        )
-
         val actualCompilationClasspath = consumerPlugin.actualCompilationClasspath(
             variantSourceSetName = commonSourceSetName,
             dependencyPathsToCheck = dependencyPathsToCheck,
