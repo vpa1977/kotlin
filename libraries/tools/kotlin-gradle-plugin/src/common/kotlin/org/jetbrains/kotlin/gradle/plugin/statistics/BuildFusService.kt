@@ -205,9 +205,6 @@ abstract class BuildFusService<T : BuildFusService.Parameters> :
                 }
             }
         }
-        reportFusMetrics {
-            ExecutedTaskMetrics.collectMetrics(event, it)
-        }
     }
 
     override fun close() {
