@@ -73,14 +73,6 @@ object CodegenTestDirectives : SimpleDirectivesContainer() {
         applicability = Global
     )
 
-    val RUN_DEX_CHECKER by directive(
-        description = "Run DxChecker and D8Checker"
-    )
-
-    val IGNORE_DEXING by directive(
-        description = "Ignore dex checkers"
-    )
-
     val IGNORE_ERRORS by directive(
         description = """
             If this directive is enabled then ${JvmIrBackendFacade::class} won't produce any binaries for test

@@ -16,7 +16,6 @@ import org.jetbrains.kotlin.test.backend.ir.IrBackendInput
 import org.jetbrains.kotlin.test.builders.*
 import org.jetbrains.kotlin.test.directives.CodegenTestDirectives
 import org.jetbrains.kotlin.test.directives.CodegenTestDirectives.DUMP_SMAP
-import org.jetbrains.kotlin.test.directives.CodegenTestDirectives.RUN_DEX_CHECKER
 import org.jetbrains.kotlin.test.directives.ConfigurationDirectives.WITH_STDLIB
 import org.jetbrains.kotlin.test.directives.DiagnosticsDirectives.DIAGNOSTICS
 import org.jetbrains.kotlin.test.directives.DiagnosticsDirectives.REPORT_ONLY_EXPLICITLY_DEFINED_DEBUG_INFO
@@ -77,10 +76,6 @@ fun TestConfigurationBuilder.commonServicesConfigurationForCodegenAndDebugTest(t
         frontend = targetFrontend
         targetPlatform = JvmPlatforms.defaultJvmPlatform
         dependencyKind = DependencyKind.Binary
-    }
-
-    defaultDirectives {
-        +RUN_DEX_CHECKER
     }
 
     useConfigurators(
@@ -180,7 +175,6 @@ fun TestStepBuilder.HandlersStepBuilder.NonGroupingPhase<FirOutputArtifact, Fron
 fun TestStepBuilder.HandlersStepBuilder.NonGroupingPhase<BinaryArtifacts.Jvm, ArtifactKinds.Jvm>.commonBackendHandlersForCodegenTest(includeNoCompilationErrorsHandler: Boolean = true) {
     useHandlers(
         ::JvmBackendDiagnosticsHandler,
-        ::DxCheckerHandler,
     )
     if (includeNoCompilationErrorsHandler) {
         useHandlers(::NoJvmSpecificCompilationErrorsHandler)
@@ -286,6 +280,5 @@ fun TestConfigurationBuilder.configureModernJavaTest(jdkKind: TestJdkKind, jvmTa
         JvmEnvironmentConfigurationDirectives.JDK_KIND with jdkKind
         JvmEnvironmentConfigurationDirectives.JVM_TARGET with jvmTarget
         +WITH_STDLIB
-        +CodegenTestDirectives.IGNORE_DEXING
     }
 }

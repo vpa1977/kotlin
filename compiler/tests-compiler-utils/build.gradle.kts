@@ -28,7 +28,6 @@ dependencies {
     testFixturesApi(project(":compiler:backend.jvm.entrypoint"))
     testFixturesApi(testFixtures(project(":compiler:test-infrastructure-utils")))
     testFixturesApi(project(":kotlin-preloader"))
-    testFixturesApi(commonDependency("com.android.tools:r8"))
     testFixturesCompileOnly(intellijCore())
 
     testFixturesApi(libs.guava)

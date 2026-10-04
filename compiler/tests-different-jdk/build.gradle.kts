@@ -87,9 +87,7 @@ projectTests {
     //JDK 17
     codegenTestTask(target = 8, jdk = JdkMajorVersion.JDK_17_0)
 
-    codegenTestTask(target = 17, jdk = JdkMajorVersion.JDK_17_0) {
-        systemProperty("kotlin.test.box.d8.disable", true)
-    }
+    codegenTestTask(target = 17, jdk = JdkMajorVersion.JDK_17_0)
 
     //..also add this two tasks to build after adding fresh jdks to build agents
     val mostRecentJdk = JdkMajorVersion.values().last()
@@ -102,7 +100,5 @@ projectTests {
         targetInTestClass = "Last",
         jvm = "Last",
         jdk = mostRecentJdk
-    ) {
-        systemProperty("kotlin.test.box.d8.disable", true)
-    }
+    )
 }
