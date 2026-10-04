@@ -63,7 +63,6 @@ plugins {
         id("kotlin.native.build-tools-conventions") apply false
     }
     `jvm-toolchains`
-    id("com.autonomousapps.dependency-analysis") version "3.6.1"
     id("project-tests-convention") apply false
     id("test-data-manager-root")
 }
@@ -577,9 +576,6 @@ val dependencyOnSnapshotReflectWhitelist = setOf(
 allprojects {
     if (!project.path.startsWith(":kotlin-ide.")) {
         pluginManager.apply("common-configuration")
-    }
-    if (!project.path.startsWith(":compiler:build-tools")) {
-        pluginManager.apply("com.autonomousapps.dependency-analysis")
     }
     if (kotlinBuildProperties.isInIdeaSync.get()) {
         afterEvaluate {
