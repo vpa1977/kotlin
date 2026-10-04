@@ -6,7 +6,6 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.diagnostics.KotlinToolingDiagnostics
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilerExecutionStrategy
 import org.jetbrains.kotlin.gradle.testbase.*
-import org.jetbrains.kotlin.test.TestMetadata
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.io.TempDir
@@ -158,27 +157,6 @@ class SimpleKotlinGradleIT : KGPBaseTest() {
                 assertOutputContains("GroovyInteropTest > classWithReferenceToInner PASSED")
                 assertOutputContains("GroovyInteropTest > groovyTraitAccessor PASSED")
                 assertOutputContains("GroovyInteropTest > parametersInEnumConstructor PASSED")
-            }
-        }
-    }
-
-    //Proguard corrupts RuntimeInvisibleParameterAnnotations/RuntimeVisibleParameterAnnotations tables:
-    // https://sourceforge.net/p/proguard/bugs/735/
-    // Gradle 7 compatibility issue: https://github.com/Guardsquare/proguard/issues/136
-    @GradleTest
-    @DisplayName("Should correctly interop with ProGuard")
-    @TestMetadata("interopWithProguarded")
-    fun testInteropWithProguarded(gradleVersion: GradleVersion) {
-        project(
-            "interopWithProguarded",
-            gradleVersion,
-        ) {
-            build("build") {
-                assertTasksExecuted(":test")
-                assertOutputContains("InteropWithProguardedTest > parametersInInnerKotlinClassConstructor PASSED")
-                assertOutputContains("InteropWithProguardedTest > parametersInInnerJavaClassConstructor PASSED")
-                assertOutputContains("InteropWithProguardedTest > parametersInJavaEnumConstructor PASSED")
-                assertOutputContains("InteropWithProguardedTest > parametersInKotlinEnumConstructor PASSED")
             }
         }
     }

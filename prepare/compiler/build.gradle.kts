@@ -45,7 +45,7 @@ dependencies {
 
     compilerVersion(project(":compiler:compiler.version"))
     compilerModules
-        .filter { it != ":compiler:compiler.version" } // Version will be added directly to the final jar excluding proguard and relocation
+        .filter { it != ":compiler:compiler.version" } // Version will be added directly to the final jar
         .forEach {
             fatJarContents(project(it)) { isTransitive = false }
         }
@@ -84,7 +84,7 @@ dependencies {
 val packCompiler by task<Jar> {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     destinationDirectory.set(layout.buildDirectory.dir("libs"))
-    archiveClassifier.set("before-proguard")
+    archiveClassifier.set("unshrunk")
 
     dependsOn(fatJarContents)
     from {

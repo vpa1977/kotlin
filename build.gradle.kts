@@ -712,11 +712,10 @@ gradle.taskGraph.whenReady {
     fun Boolean.toOnOff(): String = if (this) "on" else "off"
     val profile = if (isTeamcityBuild.get()) "CI" else "Local"
 
-    val proguardMessage = "proguard is ${kotlinBuildProperties.proguard.toOnOff()}"
     val jarCompressionMessage = "jar compression is ${kotlinBuildProperties.jarCompression.toOnOff()}"
 
     logger.warn(
-        "$profile build profile is active ($proguardMessage, $jarCompressionMessage). " +
+        "$profile build profile is active ($jarCompressionMessage). " +
                 "Use -Pteamcity=<true|false> to reproduce CI/local build"
     )
 

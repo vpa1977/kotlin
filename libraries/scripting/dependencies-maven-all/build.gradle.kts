@@ -17,16 +17,12 @@ plugins {
     kotlin("jvm")
 }
 
-val proguardLibraryJars by configurations.creating {
-    attributes {
-        attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.JAVA_RUNTIME))
-        attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, objects.named(LibraryElements.JAR))
-    }
+plugins {
+    kotlin("jvm")
 }
 
 dependencies {
     api(project(":kotlin-scripting-dependencies"))
-    proguardLibraryJars(project(":kotlin-scripting-dependencies"))
 
     embedded(project(":kotlin-scripting-dependencies-maven")) { isTransitive = false }
 
@@ -122,46 +118,11 @@ val normalizedJar by task<Jar> {
     }
 }
 
-val proguard by task<CacheableProguardTask> {
-    dependsOn(normalizedJar)
-    configuration("dependencies-maven.pro")
-
-    injars(mapOf("filter" to "!META-INF/versions/**,!kotlinx/coroutines/debug/**"), normalizedJar.get().outputs.files)
-
-    outjars(layout.buildDirectory.file(jarBaseName.map { "libs/$it-$version-after-proguard.jar" }))
-
-    javaLauncher.set(project.getToolchainLauncherFor(JdkMajorVersion.JDK_1_8))
-
-    libraryjars(mapOf("filter" to "!META-INF/versions/**"), proguardLibraryJars)
-    libraryjars(
-        files(
-            javaLauncher.map {
-                firstFromJavaHomeThatExists(
-                    "jre/lib/rt.jar",
-                    "../Classes/classes.jar",
-                    jdkHome = it.metadata.installationPath.asFile
-                )!!
-            },
-            javaLauncher.map {
-                firstFromJavaHomeThatExists(
-                    "jre/lib/jsse.jar",
-                    "../Classes/jsse.jar",
-                    jdkHome = it.metadata.installationPath.asFile
-                )!!
-            },
-            javaLauncher.map {
-                Jvm.forHome(it.metadata.installationPath.asFile).toolsJar!!
-            }
-        )
-    )
-}
-
 val resultJar by task<Jar> {
-    val pack = if (kotlinBuildProperties.proguard) proguard else normalizedJar
-    dependsOn(pack)
+    dependsOn(normalizedJar)
     setupPublicJar(jarBaseName)
     from {
-        zipTree(pack.map { it.singleOutputFile(layout) })
+        zipTree(normalizedJar.map { it.singleOutputFile(layout) })
     }
 }
 

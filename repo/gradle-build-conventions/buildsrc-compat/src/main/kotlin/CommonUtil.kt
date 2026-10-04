@@ -15,7 +15,6 @@ import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.bundling.AbstractArchiveTask
 import org.gradle.internal.os.OperatingSystem
 import org.gradle.kotlin.dsl.*
-import proguard.gradle.ProGuardTask
 import java.io.File
 import java.util.*
 import java.util.concurrent.Callable
@@ -67,7 +66,6 @@ fun JavaExec.pathRelativeToWorkingDir(file: File): String = file.relativeTo(work
 
 fun Task.singleOutputFile(layout: ProjectLayout): File = when (this) {
     is AbstractArchiveTask -> archiveFile.get().asFile
-    is ProGuardTask -> layout.files(outJarFiles.single()!!).singleFile
     else -> outputs.files.singleFile
 }
 

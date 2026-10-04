@@ -474,10 +474,8 @@ fun skipJvmDefaultForModule(path: String): Boolean =
 // Gradle plugin modules are disabled because different Gradle versions bundle different Kotlin compilers,
     // and not all of them support the new JVM default scheme.
     "-gradle" in path || "-runtime" in path || path == ":kotlin-project-model" ||
-            // Workaround a Proguard issue:
-            //     java.lang.IllegalAccessError: tried to access method kotlin.reflect.jvm.internal.impl.types.checker.ClassicTypeSystemContext$substitutionSupertypePolicy$2.<init>(
-            //       Lkotlin/reflect/jvm/internal/impl/types/checker/ClassicTypeSystemContext;Lkotlin/reflect/jvm/internal/impl/types/TypeSubstitutor;
-            //     )V from class kotlin.reflect.jvm.internal.impl.resolve.OverridingUtilTypeSystemContext
+            // :core:descriptors still contains Java code that references Kotlin interface DefaultImpls classes,
+            // so it must keep the old JVM-default behavior where those classes are generated.
             // KT-54749
             path == ":core:descriptors"
 

@@ -1,9 +1,7 @@
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.file.ConfigurableFileCollection
-import org.gradle.api.file.RegularFile
 import org.gradle.api.tasks.TaskProvider
-import org.gradle.internal.jvm.Jvm
 import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.register
@@ -44,53 +42,6 @@ fun Project.inheritAndValidateExternalDependencies(
             }
         }
     }
-}
-
-/**
- * This task runs ProGuard on the embedded jar with a certain runtime classpath. ProGuard will fail the task if the embedded jar references
- * classes that are not present in libraryjars.
- */
-fun Project.validateEmbeddedJarClasspathUsingProguard(
-    embeddedJar: TaskProvider<out Jar>,
-    runtimeClasspath: ConfigurableFileCollection,
-    proguardConfiguration: RegularFile,
-) = tasks.register("validateEmbeddedJarClasspathUsingProguard", CacheableProguardTask::class) {
-    group = LifecycleBasePlugin.VERIFICATION_GROUP
-    description = "Validates correctness of jar artifact produced by ${embeddedJar.name}"
-    outputs.cacheIf { false }
-    outputs.upToDateWhen { false }
-
-    dependsOn(runtimeClasspath)
-    dependsOn(embeddedJar)
-    javaLauncher.set(project.getToolchainLauncherFor(JdkMajorVersion.JDK_1_8))
-
-    configuration(proguardConfiguration)
-
-    injars(files(embeddedJar))
-    outjars(layout.buildDirectory.file("proguard/output.jar"))
-
-    libraryjars(runtimeClasspath)
-    libraryjars(
-        files(
-            javaLauncher.map {
-                firstFromJavaHomeThatExists(
-                    "jre/lib/rt.jar",
-                    "../Classes/classes.jar",
-                    jdkHome = it.metadata.installationPath.asFile
-                )!!
-            },
-            javaLauncher.map {
-                firstFromJavaHomeThatExists(
-                    "jre/lib/jsse.jar",
-                    "../Classes/jsse.jar",
-                    jdkHome = it.metadata.installationPath.asFile
-                )!!
-            },
-            javaLauncher.map {
-                Jvm.forHome(it.metadata.installationPath.asFile).toolsJar!!
-            }
-        )
-    )
 }
 
 /**

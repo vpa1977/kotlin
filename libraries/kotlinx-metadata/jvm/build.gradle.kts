@@ -16,21 +16,12 @@ val embedded by configurations
 embedded.isTransitive = false
 configurations.getByName("compileOnly").extendsFrom(embedded)
 
-val proguardLibraryJars by configurations.creating {
-    attributes {
-        attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.JAVA_RUNTIME))
-        attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, objects.named(LibraryElements.JAR))
-    }
-}
-
 dependencies {
     api(kotlinStdlib())
     embedded(project(":kotlin-metadata"))
     embedded(project(":core:metadata"))
     embedded(project(":core:metadata.jvm"))
     embedded(protobufLite())
-
-    proguardLibraryJars(kotlinStdlib())
 }
 
 kotlin {
@@ -58,36 +49,11 @@ val relocatedJar by task<ShadowJar> {
     relocate("org.jetbrains.kotlin", "kotlin.metadata.internal")
 }
 
-val proguard by task<CacheableProguardTask> {
-    dependsOn(relocatedJar)
-
-    injars(mapOf("filter" to "!META-INF/versions/**"), relocatedJar.get().outputs.files)
-    outjars(fileFrom(base.libsDirectory.asFile.get(), "${base.archivesName.get()}-$version-proguard.jar"))
-
-    javaLauncher.set(project.getToolchainLauncherFor(JdkMajorVersion.JDK_1_8))
-
-    libraryjars(mapOf("filter" to "!META-INF/versions/**"), proguardLibraryJars)
-    libraryjars(
-        project.files(
-            javaLauncher.map {
-                firstFromJavaHomeThatExists(
-                    "jre/lib/rt.jar",
-                    "../Classes/classes.jar",
-                    jdkHome = it.metadata.installationPath.asFile
-                )!!
-            }
-        )
-    )
-
-    configuration("metadata.pro")
-}
-
 val resultJar by task<Jar> {
-    val pack = if (kotlinBuildProperties.proguard) proguard else relocatedJar
-    dependsOn(pack)
+    dependsOn(relocatedJar)
     setupPublicJar(base.archivesName.get())
     from {
-        zipTree(pack.get().singleOutputFile(layout))
+        zipTree(relocatedJar.get().singleOutputFile(layout))
     }
 
     manifest {

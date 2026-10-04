@@ -17,8 +17,7 @@ if (isConfigurationCacheDisabled) {
 private class BuildTimeReporter(
     private val kotlinCompileClass: Class<*>,
     private val javaCompileClass: Class<*>,
-    private val jarClass: Class<*>,
-    private val proguardClass: Class<*>
+    private val jarClass: Class<*>
 ) : @Suppress("DEPRECATION") org.gradle.api.execution.TaskExecutionListener {
     companion object {
         fun configure(gradle: Gradle) {
@@ -37,8 +36,7 @@ private class BuildTimeReporter(
             val reporter = BuildTimeReporter(
                 kotlinCompileClass = findClass("org.jetbrains.kotlin.gradle.tasks.AbstractKotlinCompile") ?: return,
                 javaCompileClass = findClass("org.gradle.api.tasks.compile.JavaCompile") ?: return,
-                jarClass = findClass("org.gradle.jvm.tasks.Jar") ?: return,
-                proguardClass = findClass("proguard.gradle.ProGuardTask") ?: return
+                jarClass = findClass("org.gradle.jvm.tasks.Jar") ?: return
             )
             @Suppress("DEPRECATION")
             gradle.taskGraph.addTaskExecutionListener(reporter)
@@ -84,8 +82,7 @@ private class BuildTimeReporter(
     private fun taskCategory(task: Task): TaskCategory = when {
         kotlinCompileClass.isInstance(task) -> TaskCategory.COMPILING_KOTLIN
         javaCompileClass.isInstance(task) -> TaskCategory.COMPILING_JAVA
-        jarClass.isInstance(task) ||
-                proguardClass.isInstance(task) -> TaskCategory.PROCESSING_JARS
+        jarClass.isInstance(task) -> TaskCategory.PROCESSING_JARS
         else -> TaskCategory.UNCATEGORIZED
     }
 

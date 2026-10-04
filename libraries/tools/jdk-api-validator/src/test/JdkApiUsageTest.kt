@@ -18,8 +18,7 @@ class JdkApiUsageTest {
     fun kotlinReflect() {
         testApiUsage(
             // TODO: try to pass these paths from Gradle
-            // Do not use the final jar artifact. It's shrunk by proguard.
-            jarArtifact("../../reflect/build/libs", "kotlin-reflect", "shadow"),
+            jarArtifact("../../reflect/build/libs", "kotlin-reflect"),
             dependencies = listOf(jarArtifact("../../stdlib/build/libs", "kotlin-stdlib"))
         )
     }

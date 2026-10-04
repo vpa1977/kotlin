@@ -34,9 +34,6 @@ publish()
 val core = "$rootDir/core"
 val relocatedCoreSrc = "${layout.buildDirectory.get().asFile}/core-relocated"
 
-val proguardDeps by configurations.creating
-val proguardAdditionalInJars by configurations.creating
-
 val embedded by configurations
 embedded.isTransitive = false
 
@@ -44,9 +41,6 @@ configurations.getByName("compileOnly").extendsFrom(embedded)
 
 dependencies {
     api(kotlinStdlib())
-
-    proguardDeps(kotlinStdlib())
-    proguardAdditionalInJars(project(":kotlin-annotations-jvm"))
 
     embedded(project(":core:names")) { isTransitive = false }
     embedded(project(":core:language.model")) { isTransitive = false }
@@ -203,30 +197,6 @@ val stripMetadata by tasks.registering {
     }
 }
 
-val proguard by task<CacheableProguardTask> {
-    dependsOn(stripMetadata)
-
-    injars(mapOf("filter" to "!META-INF/versions/**"), stripMetadata.get().outputs.files)
-    injars(mapOf("filter" to "!META-INF/**,!**/*.kotlin_builtins"), proguardAdditionalInJars)
-    outjars(fileFrom(base.libsDirectory.asFile.get(), "${base.archivesName.get()}-$version-proguard.jar"))
-
-    javaLauncher.set(project.getToolchainLauncherFor(JdkMajorVersion.JDK_1_8))
-    libraryjars(mapOf("filter" to "!META-INF/versions/**"), proguardDeps)
-    libraryjars(
-        project.files(
-            javaLauncher.map {
-                firstFromJavaHomeThatExists(
-                    "jre/lib/rt.jar",
-                    "../Classes/classes.jar",
-                    jdkHome = it.metadata.installationPath.asFile
-                )!!
-            }
-        )
-    )
-
-    configuration("$core/reflection.jvm/reflection.pro")
-}
-
 val relocateCoreSources by task<Copy> {
     val relocatedCoreSrc = relocatedCoreSrc
     val fs = serviceOf<FileSystemOperations>()
@@ -285,7 +255,6 @@ tasks.named("assemble").configure { dependsOn(sourcesJar) }
 addArtifact("sources", sourcesJar)
 
 val intermediate = when {
-    kotlinBuildProperties.proguard -> proguard
     kotlinBuildProperties.relocation -> stripMetadata
     else -> reflectShadowJar
 }

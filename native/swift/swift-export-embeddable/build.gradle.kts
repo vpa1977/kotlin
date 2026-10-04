@@ -66,29 +66,11 @@ dependencies {
 }
 
 fun registerSwiftExportEmbeddableValidationTasks(swiftExportEmbeddableJarTask: TaskProvider<out org.gradle.jvm.tasks.Jar>) {
-    val runtimeClasspathCopy = configurations.runtimeClasspath.get().copyRecursive()
-    runtimeClasspathCopy.dependencies.addAll(
-        listOf(
-            /**
-             * These are needed for .kts files analysis; we don't actually want them in Swift Export, but currently ProGuard sees these in
-             * shared Analysis API code and complaints
-             */
-            dependencies.create(project(":kotlin-scripting-compiler-embeddable")),
-            dependencies.create(project(":kotlin-assignment-compiler-plugin.embeddable")),
-        )
-    )
-
-    // FIXME: Publish the ProGuarded version of swift-export-embeddable - KT-69180
-    val validateSwiftExportEmbeddableHasProperDependenciesInTheClasspath = validateEmbeddedJarClasspathUsingProguard(
-        swiftExportEmbeddableJarTask,
-        files(runtimeClasspathCopy),
-        proguardConfiguration = project.layout.projectDirectory.file("swift-export-embeddable.pro")
-    )
-    validateSwiftExportEmbeddable.configure { dependsOn(validateSwiftExportEmbeddableHasProperDependenciesInTheClasspath) }
+    val runtimeClasspath = files(configurations.runtimeClasspath)
 
     val validateNoDuplicatesInRuntimeClasspath = validateEmbeddedJarRuntimeClasspathHasNoDuplicates(
         swiftExportEmbeddableJarTask,
-        files(runtimeClasspathCopy),
+        runtimeClasspath,
     )
     validateSwiftExportEmbeddable.configure { dependsOn(validateNoDuplicatesInRuntimeClasspath) }
 }
@@ -111,11 +93,11 @@ javadocJar { exclude("**") } // empty Jar, no public javadocs
  *
  * If these tests fail with ClassNotFoundException or similar it means that either:
  * - Some change introduced runtime classpath breakage in swift-export-embeddable. This means such dependency must be added to [runtimeOnly]
- * , [embedded] dependencies of swift-export-embeddable or relevant classes must be retained in compiler.pro
+ *   or [embedded] dependencies of swift-export-embeddable.
  * - Or test classes and the testing code is missing a dependency in [shadedIntransitiveTestDependenciesJar]. Please add dependencies
- * carefully after understanding the sources of breakage
+ *   carefully after understanding the sources of breakage
  *
- * Make sure to run these tests against ProGuarded kotlin-compiler-embeddable e.g.:
+ * Make sure to run these tests against kotlin-compiler-embeddable e.g.:
  * ./gradlew :native:swift:swift-export-embeddable:testSwiftExportStandaloneWithEmbeddable --info -Pkotlin.native.enabled=true -Pteamcity=true
  */
 

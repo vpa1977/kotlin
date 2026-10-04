@@ -30,7 +30,7 @@ val relocatedJar by task<ShadowJar> {
     configurations = listOf(embedded)
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     destinationDirectory.set(layout.buildDirectory.dir("libs"))
-    archiveClassifier.set("before-proguard")
+    archiveClassifier.set("shadow")
 
     if (kotlinBuildProperties.relocation) {
         packagesToRelocate.forEach {

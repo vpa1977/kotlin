@@ -85,7 +85,7 @@ command line parameters on the first run:
 - `gradlePluginTest` - build and run gradle plugin tests
 - `compilerTest` - build and run all compiler tests
 
-To reproduce TeamCity build use `-Pteamcity=true` flag. Local builds don't run proguard and have jar compression disabled by default.
+To reproduce TeamCity build use `-Pteamcity=true` flag. Local builds have jar compression disabled by default.
 
 **OPTIONAL:** Some artifacts, mainly Maven plugin ones, are built separately with Maven.
 Refer to [libraries/ReadMe.md](libraries/ReadMe.md) for details.

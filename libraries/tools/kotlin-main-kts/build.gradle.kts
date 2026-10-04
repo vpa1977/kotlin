@@ -14,13 +14,6 @@ val localPackagesToRelocate =
         "kotlinx.coroutines"
     )
 
-val proguardLibraryJars by configurations.creating {
-    attributes {
-        attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.JAVA_RUNTIME))
-        attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, objects.named(LibraryElements.JAR))
-    }
-}
-
 dependencies {
     compileOnly(project(":compiler:cli-base"))
     compileOnly(project(":kotlin-scripting-jvm-host-unshaded"))
@@ -42,10 +35,6 @@ dependencies {
         }
     }
 
-    proguardLibraryJars(kotlinStdlib())
-    proguardLibraryJars(commonDependency("org.jetbrains.kotlin:kotlin-reflect")) { isTransitive = false }
-    proguardLibraryJars(project(":kotlin-compiler"))
-
     testImplementation(project(":kotlin-scripting-dependencies"))
     testImplementation(libs.junit4)
 }
@@ -65,7 +54,7 @@ val relocatedJar by task<ShadowJar> {
     from(mainSourceSet.output)
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     destinationDirectory.set(layout.buildDirectory.dir("libs"))
-    archiveClassifier.set("before-proguard")
+    archiveClassifier.set("shadow")
 
     // don't add this files to resources classpath to avoid IDE exceptions on kotlin project
     from("jar-resources")
@@ -77,46 +66,11 @@ val relocatedJar by task<ShadowJar> {
     }
 }
 
-val proguard by task<CacheableProguardTask> {
-    dependsOn(relocatedJar)
-    configuration("main-kts.pro")
-
-    injars(mapOf("filter" to "!META-INF/versions/**,!kotlinx/coroutines/debug/**"), relocatedJar.get().outputs.files)
-
-    outjars(layout.buildDirectory.file(jarBaseName.map { "libs/$it-$version-after-proguard.jar" }))
-
-    javaLauncher.set(project.getToolchainLauncherFor(JdkMajorVersion.JDK_1_8))
-
-    libraryjars(mapOf("filter" to "!META-INF/versions/**"), proguardLibraryJars)
-    libraryjars(
-        files(
-            javaLauncher.map {
-                firstFromJavaHomeThatExists(
-                    "jre/lib/rt.jar",
-                    "../Classes/classes.jar",
-                    jdkHome = it.metadata.installationPath.asFile
-                )!!
-            },
-            javaLauncher.map {
-                firstFromJavaHomeThatExists(
-                    "jre/lib/jsse.jar",
-                    "../Classes/jsse.jar",
-                    jdkHome = it.metadata.installationPath.asFile
-                )!!
-            },
-            javaLauncher.map {
-                Jvm.forHome(it.metadata.installationPath.asFile).toolsJar!!
-            }
-        )
-    )
-}
-
 val resultJar by task<Jar> {
-    val pack = if (kotlinBuildProperties.proguard) proguard else relocatedJar
-    dependsOn(pack)
+    dependsOn(relocatedJar)
     setupPublicJar(jarBaseName)
     from {
-        zipTree(pack.map { it.singleOutputFile(layout) })
+        zipTree(relocatedJar.map { it.singleOutputFile(layout) })
     }
 }
 

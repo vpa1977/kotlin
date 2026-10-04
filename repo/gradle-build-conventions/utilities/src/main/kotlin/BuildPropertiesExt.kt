@@ -13,8 +13,6 @@ val KotlinBuildProperties.postProcessing: Boolean get() = isTeamcityBuild.get() 
 
 val KotlinBuildProperties.relocation: Boolean get() = postProcessing
 
-val KotlinBuildProperties.proguard: Boolean get() = postProcessing && booleanProperty("kotlin.build.proguard", isTeamcityBuild).get()
-
 val KotlinBuildProperties.jarCompression: Boolean get() = booleanProperty("kotlin.build.jar.compression", isTeamcityBuild).get()
 
 val KotlinBuildProperties.ignoreTestFailures: Boolean get() = booleanProperty("ignoreTestFailures", isTeamcityBuild).get()

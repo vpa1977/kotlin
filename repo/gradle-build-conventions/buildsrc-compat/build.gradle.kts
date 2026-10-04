@@ -95,7 +95,6 @@ dependencies {
     implementation(libs.gradle.pluginPublish.gradlePlugin)
     implementation(libs.spdx.gradlePlugin)
     implementation(libs.shadow.gradlePlugin)
-    implementation(libs.proguard.gradlePlugin)
 
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.cio)
