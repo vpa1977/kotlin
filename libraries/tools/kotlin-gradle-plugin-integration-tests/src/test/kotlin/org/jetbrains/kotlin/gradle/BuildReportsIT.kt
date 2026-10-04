@@ -14,7 +14,6 @@ import org.jetbrains.kotlin.gradle.plugin.diagnostics.KotlinToolingDiagnostics
 import org.jetbrains.kotlin.gradle.report.BuildReportType
 import org.jetbrains.kotlin.gradle.testbase.*
 import org.jetbrains.kotlin.gradle.testbase.BuildOptions.IsolatedProjectsMode
-import org.jetbrains.kotlin.gradle.testbase.TestVersions.ThirdPartyDependencies.GRADLE_ENTERPRISE_PLUGIN_VERSION
 import org.jetbrains.kotlin.gradle.uklibs.applyMultiplatform
 import org.jetbrains.kotlin.gradle.util.BuildOperationRecordImpl
 import org.jetbrains.kotlin.gradle.util.readJsonReport
@@ -537,49 +536,6 @@ class BuildReportsIT : KGPBaseTest() {
         }
     }
 
-    @DisplayName("custom value limit")
-    @GradleTestVersions(
-        additionalVersions = [TestVersions.Gradle.G_8_0],
-    )
-    @GradleTest
-    @JvmGradlePluginTests
-    fun testCustomValueLimitForBuildScan(gradleVersion: GradleVersion) {
-        project(
-            "simpleProject",
-            gradleVersion,
-            buildOptions = defaultBuildOptions.copy(logLevel = LogLevel.DEBUG, buildReport = listOf(BuildReportType.BUILD_SCAN))
-        ) {
-            build(
-                "compileKotlin",
-                "-Pkotlin.build.report.build_scan.custom_values_limit=0",
-                "--scan"
-            ) {
-                assertOutputContains(CAN_NOT_ADD_CUSTOM_VALUES_TO_BUILD_SCAN_MESSAGE)
-            }
-        }
-    }
-
-    @DisplayName("build scan listener lazy initialisation")
-    @GradleTestVersions(
-        additionalVersions = [TestVersions.Gradle.G_8_0],
-    )
-    @GradleTest
-    @JvmGradlePluginTests
-    fun testBuildScanListenerLazyInitialisation(gradleVersion: GradleVersion) {
-        project(
-            "simpleProject",
-            gradleVersion,
-            buildOptions = defaultBuildOptions.copy(logLevel = LogLevel.DEBUG, buildReport = listOf(BuildReportType.BUILD_SCAN))
-        ) {
-            build(
-                "compileKotlin",
-                "-Pkotlin.build.report.build_scan.custom_values_limit=0",
-            ) {
-                assertOutputDoesNotContain(CAN_NOT_ADD_CUSTOM_VALUES_TO_BUILD_SCAN_MESSAGE)
-            }
-        }
-    }
-
     @DisplayName("build scan with project isolation")
     @GradleTestVersions(
         additionalVersions = [TestVersions.Gradle.G_8_0],
@@ -740,67 +696,6 @@ class BuildReportsIT : KGPBaseTest() {
     }
 
 
-    @DisplayName("build scan metrics validation")
-    @JvmGradlePluginTests
-    @GradleTestVersions(
-        additionalVersions = [TestVersions.Gradle.G_8_0],
-    )
-    @GradleTest
-    fun testBuildScanMetricsValidation(gradleVersion: GradleVersion) {
-        project(
-            "simpleProject", gradleVersion,
-            buildOptions = defaultBuildOptions.copy(buildReport = listOf(BuildReportType.BUILD_SCAN))
-        ) {
-            buildAndFail(
-                "compileKotlin", "-Pkotlin.build.report.build_scan.metrics=unknown_prop"
-            ) {
-                assertOutputContains("Unknown metric: 'unknown_prop', list of available metrics")
-            }
-        }
-    }
-
-    @DisplayName("build reports work with init script")
-    @JvmGradlePluginTests
-    @GradleTestVersions(
-        additionalVersions = [TestVersions.Gradle.G_8_0],
-    )
-    @GradleTest
-    fun testBuildReportsWithInitScript(gradleVersion: GradleVersion) {
-        project("simpleProject", gradleVersion) {
-            gradleProperties.modify { "$it\nkotlin.build.report.output=BUILD_SCAN,FILE\n" }
-
-            val initScript = projectPath.resolve("init.gradle").createFile()
-            initScript.modify {
-                """
-                    initscript {
-                        repositories {
-                            maven { url = 'https://plugins.gradle.org/m2/' }
-                        }
-
-                        dependencies {
-                            classpath 'com.gradle:gradle-enterprise-gradle-plugin:$GRADLE_ENTERPRISE_PLUGIN_VERSION'
-                        }
-                    }
-
-                    beforeSettings {
-                        it.pluginManager.apply(com.gradle.enterprise.gradleplugin.GradleEnterprisePlugin)
-                    }
-                """.trimIndent()
-            }
-
-            build(
-                "compileKotlin",
-                "-I", "init.gradle",
-            )
-
-            build(
-                "compileKotlin",
-                "-I", "init.gradle",
-                enableBuildScan = true,
-            )
-        }
-    }
-
     @DisplayName("json validation")
     @JvmGradlePluginTests
     @GradleTestVersions(
@@ -884,82 +779,6 @@ class BuildReportsIT : KGPBaseTest() {
                 }
             }
             assertEquals(10, reportFolder.listFiles()?.size)
-        }
-    }
-
-    @DisplayName("build scan with project isolation")
-    @JvmGradlePluginTests
-    @GradleTestVersions(
-        //There is an exception for gradle 7.6 with project isolation:
-        //Plugin 'com.gradle.enterprise': Cannot access project ':app' from project ':'
-        minVersion = TestVersions.Gradle.G_8_0,
-        // https://youtrack.jetbrains.com/issue/KT-68847
-        maxVersion = TestVersions.Gradle.G_8_14,
-    )
-    @GradleTest
-    fun testBuildScanReportWithProjectIsolation(gradleVersion: GradleVersion) {
-        project(
-            "incrementalMultiproject", gradleVersion,
-            buildOptions = defaultBuildOptions.copy(
-                isolatedProjects = IsolatedProjectsMode.ENABLED,
-                buildReport = listOf(BuildReportType.BUILD_SCAN)
-            )
-        ) {
-            build(
-                "compileKotlin", "--scan"
-            ) {
-                assertOutputContains("Build report creation in the build scan format is not yet supported when the isolated projects feature is enabled.")
-            }
-        }
-    }
-
-    @DisplayName("for build scan with develocity plugin")
-    @JvmGradlePluginTests
-    @GradleTestVersions(
-        minVersion = TestVersions.Gradle.G_8_4
-    )
-    @GradleTest
-    fun testBuildScanReportWithDevelocityPlugin(gradleVersion: GradleVersion) {
-        project(
-            "incrementalMultiproject", gradleVersion,
-            buildOptions = defaultBuildOptions.copy(
-                logLevel = LogLevel.DEBUG,
-                configurationCache = BuildOptions.ConfigurationCacheValue.UNSPECIFIED,
-                buildReport = listOf(BuildReportType.BUILD_SCAN),
-                // KT-68847 Support build reports for build scan with project isolation
-                isolatedProjects = IsolatedProjectsMode.DISABLED,
-            )
-        ) {
-            settingsGradle.modify {
-                """
-                ${
-                    it.replace(
-                        "id(\"org.jetbrains.kotlin.test.gradle-warnings-detector\")",
-                        """
-                               id("org.jetbrains.kotlin.test.gradle-warnings-detector")
-                               id "com.gradle.develocity" version "${TestVersions.ThirdPartyDependencies.GRADLE_DEVELOCITY_PLUGIN_VERSION}"
-                        """.trimIndent()
-                    )
-                }
-                        
-                develocity {
-                    buildScan {
-                        termsOfUseAgree = "yes"
-                        termsOfUseUrl = "https://gradle.com/terms-of-service"
-
-                        tag "test"
-                    }
-                }
-                """.trimIndent()
-            }
-            build(
-                "compileKotlin", "--scan"
-            ) {
-                assertOutputDoesNotContain("The build scan was not published due to a configuration problem.")
-                assertOutputDoesNotContain("The following functionality has been deprecated and will be removed in the next major release of the Develocity Gradle plugin.")
-                assertOutputContains("Build metrics are stored into build scan for")
-                assertOutputContains("[com.gradle.develocity.agent.gradle.DevelocityPlugin] Publishing build scan...")
-            }
         }
     }
 
@@ -1119,7 +938,6 @@ class BuildReportsIT : KGPBaseTest() {
     }
 
     companion object {
-        private const val CAN_NOT_ADD_CUSTOM_VALUES_TO_BUILD_SCAN_MESSAGE = "Can't add any more custom values into build scan"
         private fun compilerPerformanceMetrics(): List<BuildTimeMetric> = allBuildTimeMetricsByParentMap[COMPILER_PERFORMANCE]!!
             .flatMap { allBuildTimeMetricsByParentMap[it] ?: listOf(it) }
             .filter { it !is CustomBuildTimeMetric }

@@ -5,7 +5,6 @@
 
 package org.jetbrains.kotlin.gradle.plugin
 
-import com.gradle.develocity.agent.gradle.adapters.BuildScanAdapter
 import org.gradle.api.Project
 import org.gradle.api.flow.FlowAction
 import org.gradle.api.flow.FlowParameters
@@ -20,7 +19,6 @@ import org.jetbrains.kotlin.gradle.plugin.statistics.BuildFinishBuildService
 import org.jetbrains.kotlin.gradle.plugin.statistics.ConfigurationMetricParameterFlowActionBuildFusService
 import org.jetbrains.kotlin.gradle.plugin.statistics.FlowActionBuildFusService
 import org.jetbrains.kotlin.gradle.plugin.statistics.MetricContainer
-import org.jetbrains.kotlin.gradle.report.BuildMetricsService
 import javax.inject.Inject
 
 internal abstract class StatisticsBuildFlowManager @Inject constructor(
@@ -54,27 +52,6 @@ internal abstract class StatisticsBuildFlowManager @Inject constructor(
         }
     }
 
-    fun subscribeForBuildScan(buildScan: BuildScanAdapter) {
-        flowScope.always(
-            BuildScanFlowAction::class.java
-        ) { spec ->
-            spec.parameters.buildScan.set(buildScan)
-        }
-    }
-}
-
-internal class BuildScanFlowAction : FlowAction<BuildScanFlowAction.Parameters> {
-    interface Parameters : FlowParameters {
-        @get:ServiceReference
-        val buildMetricService: Property<BuildMetricsService>
-
-        @get:Input
-        val buildScan: Property<BuildScanAdapter>
-    }
-
-    override fun execute(parameters: Parameters) {
-        parameters.buildMetricService.orNull?.addBuildScanReport(parameters.buildScan.orNull)
-    }
 }
 
 internal class BuildFinishFlowAction : FlowAction<BuildFinishFlowAction.Parameters> {

@@ -50,7 +50,7 @@ class BuildFinishBuildServiceTest {
         )
         fusDir.resolve("$buildId.kajfsjfh.kotlin-profile").writeText(
             """
-                ${BooleanMetrics.BUILD_SCAN_BUILD_REPORT}=true
+                ${BooleanMetrics.FILE_BUILD_REPORT}=true
                 BUILD FINISHED
             """.trimIndent()
         )

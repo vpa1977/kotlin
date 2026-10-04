@@ -46,10 +46,5 @@ tasks.withType<Test>().configureEach {
     val rootDir = project.rootDir
     outputs.doNotCacheIf("`workingDir` shouldn't be set to `rootDir`") { workingDir == rootDir }
 
-    develocity.testRetry {
-        maxRetries.set(kotlinBuildProperties.intProperty("kotlin.build.testRetry.maxRetries")
-                           .orElse(kotlinBuildProperties.isTeamcityBuild.map { if (it) 3 else 0 }))
-        failOnPassedAfterRetry.set(extension.allowFlaky.convention(true).map { !it })
-    }
     ignoreFailures = false
 }

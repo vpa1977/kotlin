@@ -339,22 +339,6 @@ class ConfigurationCacheIT : AbstractConfigurationCacheIT() {
         }
     }
 
-    @JvmGradlePluginTests
-    @DisplayName("with build scan report")
-    @GradleTest
-    fun testBuildScanReportSmokeTestForConfigurationCache(gradleVersion: GradleVersion) {
-        project("simpleProject", gradleVersion) {
-            val buildOptions = defaultBuildOptions.copy(buildReport = listOf(BuildReportType.BUILD_SCAN), logLevel = LogLevel.DEBUG)
-            build("clean", "assemble", "-Pkotlin.build.report.build_scan.custom_values_limit=0", "--scan", buildOptions = buildOptions) {
-                assertOutputContains("Can't add any more custom values into build scan")
-            }
-
-            build("clean", "assemble", "-Pkotlin.build.report.build_scan.custom_values_limit=0", "--scan", buildOptions = buildOptions) {
-                assertOutputContains("Can't add any more custom values into build scan")
-            }
-        }
-    }
-
     @DisplayName("with native dependencies downloader")
     @NativeGradlePluginTests
     @GradleTest

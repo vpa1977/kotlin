@@ -46,35 +46,6 @@ class KotlinBuildProperties internal constructor(
     /**
      * Nullable
      */
-    val buildCacheUrl: Provider<String> = stringProperty("kotlin.build.cache.url")
-
-    val pushToBuildCache: Provider<Boolean> = booleanProperty("kotlin.build.cache.push", false)
-
-    val localBuildCacheEnabled: Provider<Boolean> = booleanProperty("kotlin.build.cache.local.enabled", true)
-
-    /**
-     * Nullable
-     */
-    val localBuildCacheDirectory: Provider<String> = stringProperty("kotlin.build.cache.local.directory")
-
-    /**
-     * Nullable
-     */
-    val buildScanServer: Provider<String> = stringProperty("kotlin.build.scan.url")
-
-    /**
-     * Nullable
-     */
-    val buildCacheUser: Provider<String> = stringProperty("kotlin.build.cache.user")
-
-    /**
-     * Nullable
-     */
-    val buildCachePassword: Provider<String> = stringProperty("kotlin.build.cache.password")
-
-    /**
-     * Nullable
-     */
     val buildGradlePluginVersion: Provider<String> = stringProperty("kotlin.build.gradlePlugin.version")
 
     /**

@@ -77,7 +77,6 @@ dependencies {
     commonCompileOnly(project(":kotlin-gradle-build-metrics"))
     commonCompileOnly(project(":compiler:build-tools:kotlin-build-tools-jdk-utils"))
     commonCompileOnly(commonDependency("org.jetbrains.teamcity:serviceMessages"))
-    commonCompileOnly(libs.develocity.gradlePlugin)
     commonCompileOnly(commonDependency("com.google.code.gson:gson"))
     commonCompileOnly("org.jetbrains.kotlinx:kotlinx-serialization-json") {
         version {
@@ -91,8 +90,6 @@ dependencies {
     commonCompileOnly(project(":compiler:build-tools:kotlin-build-statistics"))
     commonCompileOnly(project(":native:swift:swift-export-standalone"))
     commonCompileOnly(libs.intellij.asm) { isTransitive = false }
-
-    commonCompileOnly(libs.develocity.gradlePluginAdapter)
 
     commonImplementation(project(":kotlin-gradle-plugin-idea"))
     commonImplementation(project(":kotlin-gradle-plugin-idea-proto"))
@@ -112,7 +109,6 @@ dependencies {
     embedded(project(":kotlin-gradle-statistics"))
     embedded(libs.intellij.asm) { isTransitive = false }
     embedded(commonDependency("com.google.code.gson:gson")) { isTransitive = false }
-    embedded(libs.develocity.gradlePluginAdapter)
     embedded("org.jetbrains.kotlinx:kotlinx-serialization-json") {
         exclude(group = "org.jetbrains.kotlin", module = "kotlin-stdlib")
         exclude(group = "org.jetbrains.kotlin", module = "kotlin-stdlib-common")

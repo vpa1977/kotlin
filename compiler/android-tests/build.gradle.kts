@@ -45,10 +45,6 @@ val acceptAndroidSdkLicenses = with(androidSdkProvisioner) {
 
 projectTests {
     testTask(jUnitMode = JUnitMode.JUnit4) {
-        develocity {
-            testRetry.maxRetries.set(0)
-        }
-
         dependsOn(":dist")
         dependsOn(acceptAndroidSdkLicenses)
         val jdkHome = project.getToolchainJdkHomeFor(JdkMajorVersion.JDK_17_0)

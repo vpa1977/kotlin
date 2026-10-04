@@ -10,7 +10,6 @@ import java.io.Serializable
 enum class BuildReportType : Serializable {
     FILE,
     HTTP,
-    BUILD_SCAN,
     SINGLE_FILE,
     TRY_NEXT_CONSOLE,
     JSON,

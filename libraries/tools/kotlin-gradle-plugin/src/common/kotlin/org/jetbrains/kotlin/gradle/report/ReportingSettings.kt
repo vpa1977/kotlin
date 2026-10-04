@@ -16,7 +16,6 @@ data class ReportingSettings(
     val buildReportLabel: String? = null,
     val fileReportSettings: FileReportSettings? = null,
     val httpReportSettings: HttpReportSettings? = null,
-    val buildScanReportSettings: BuildScanSettings? = null,
     val singleOutputFile: File? = null,
     val jsonOutputDir: File? = null,
     val experimentalTryNextConsoleOutput: Boolean = false,
@@ -24,14 +23,5 @@ data class ReportingSettings(
 ) : Serializable {
     companion object {
         const val serialVersionUID: Long = 2L
-    }
-}
-
-data class BuildScanSettings(
-    val customValueLimit: Int,
-    val metrics: Set<String>?
-): Serializable {
-    companion object {
-        const val serialVersionUID: Long = 0
     }
 }

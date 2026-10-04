@@ -1,9 +1,6 @@
 [versions]
 kotlin-release = "2.3.20-RC"
 dexMemberList = "4.1.1"
-gradle-custom-user-data = "2.4.0"
-develocity = "4.2.2"
-develocity-plugin-adapter = "1.2.1"
 gradle-plugin-publish = "2.1.1"
 # guava and failureaccess should be aligned relatively
 guava = "33.3.1-jre"
@@ -81,9 +78,6 @@ kotlin-compiler-arguments-release = { module = "org.jetbrains.kotlin:kotlin-comp
 kotlin-compiler-release = { module = "org.jetbrains.kotlin:kotlin-compiler", version.ref = "kotlin-release" }
 dexMemberList = { module = "com.jakewharton.dex:dex-member-list", version.ref = "dexMemberList" }
 downloadTask-gradlePlugin = { module = "de.undercouch:gradle-download-task", version.ref = "downloadTask" }
-gradle-customUserData-gradlePlugin = { module = "com.gradle:common-custom-user-data-gradle-plugin", version.ref = "gradle-custom-user-data" }
-develocity-gradlePlugin = { module = "com.gradle:develocity-gradle-plugin", version.ref = "develocity" }
-develocity-gradlePluginAdapter = { module = "com.gradle:develocity-gradle-plugin-adapters", version.ref = "develocity-plugin-adapter" }
 gradle-pluginPublish-gradlePlugin = { module = "com.gradle.publish:plugin-publish-plugin", version.ref = "gradle-plugin-publish" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-core-jvm = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm", version.ref = "kotlinx-coroutines" }

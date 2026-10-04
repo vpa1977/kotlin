@@ -22,7 +22,7 @@ abstract class KotlinJvmTest : Test() {
         val originalExecutor = super.createTestExecuter()
 
         // If the executor is not an instance of DefaultTestExecutor it means that it was created before
-        // and set to `Test.testExecuter` by Gradle plugins like test-distribution and test-retry.
+        // and set to `Test.testExecuter` by another Gradle plugin.
         // We can return the executor "as is" in this case as it is already wrapped with our Executor.
         return if (targetName != null && originalExecutor is DefaultTestExecuter) {
             Executor(originalExecutor, targetName!!)

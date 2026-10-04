@@ -54,7 +54,6 @@ fun KGPBaseTest.project(
     projectName: String,
     gradleVersion: GradleVersion,
     buildOptions: BuildOptions = defaultBuildOptions,
-    enableBuildScan: Boolean = false,
     enableOfflineMode: Boolean = false,
     addHeapDumpOptions: Boolean = true,
     enableGradleDebug: EnableGradleDebug = EnableGradleDebug.AUTO,
@@ -97,7 +96,6 @@ fun KGPBaseTest.project(
         projectPath = projectPath,
         buildOptions = buildOptions,
         gradleVersion = gradleVersion,
-        enableBuildScan = enableBuildScan,
         enableOfflineMode = enableOfflineMode,
         enableGradleDebug = enableGradleDebug,
         enableGradleDaemonMemoryLimitInMb = enableGradleDaemonMemoryLimitInMb,
@@ -133,7 +131,6 @@ fun KGPBaseTest.nativeProject(
     projectName: String,
     gradleVersion: GradleVersion,
     buildOptions: BuildOptions = defaultBuildOptions,
-    enableBuildScan: Boolean = false,
     enableOfflineMode: Boolean = false,
     dependencyManagement: DependencyManagement = DependencyManagement.DefaultDependencyManagement(),
     addHeapDumpOptions: Boolean = true,
@@ -151,7 +148,6 @@ fun KGPBaseTest.nativeProject(
         projectName = projectName,
         gradleVersion = gradleVersion,
         buildOptions = buildOptions,
-        enableBuildScan = enableBuildScan,
         enableOfflineMode = enableOfflineMode,
         dependencyManagement = dependencyManagement,
         addHeapDumpOptions = addHeapDumpOptions,
@@ -176,7 +172,6 @@ fun TestProject.build(
     enableGradleDebug: EnableGradleDebug = this.enableGradleDebug,
     kotlinDaemonDebugPort: Int? = this.kotlinDaemonDebugPort,
     enableBuildCacheDebug: Boolean = false,
-    enableBuildScan: Boolean = this.enableBuildScan,
     enableOfflineMode: Boolean = this.enableOfflineMode,
     enableGradleDaemonMemoryLimitInMb: Int? = this.enableGradleDaemonMemoryLimitInMb,
     enableKotlinDaemonMemoryLimitInMb: Int? = this.enableKotlinDaemonMemoryLimitInMb,
@@ -192,7 +187,6 @@ fun TestProject.build(
         enableGradleDebug = enableGradleDebug,
         kotlinDaemonDebugPort = kotlinDaemonDebugPort,
         enableBuildCacheDebug = enableBuildCacheDebug,
-        enableBuildScan = enableBuildScan,
         enableOfflineMode = enableOfflineMode,
         buildOptions = buildOptions,
         enableGradleDaemonMemoryLimitInMb = enableGradleDaemonMemoryLimitInMb,
@@ -213,11 +207,10 @@ fun TestProject.buildAndFail(
     enableGradleDebug: EnableGradleDebug = this.enableGradleDebug,
     kotlinDaemonDebugPort: Int? = this.kotlinDaemonDebugPort,
     enableBuildCacheDebug: Boolean = false,
-    enableBuildScan: Boolean = this.enableBuildScan,
     enableOfflineMode: Boolean = this.enableOfflineMode,
-    buildOptions: BuildOptions = this.buildOptions,
     enableGradleDaemonMemoryLimitInMb: Int? = this.enableGradleDaemonMemoryLimitInMb,
     enableKotlinDaemonMemoryLimitInMb: Int? = this.enableKotlinDaemonMemoryLimitInMb,
+    buildOptions: BuildOptions = this.buildOptions,
     environmentVariables: EnvironmentalVariables = this.environmentVariables,
     inputStream: InputStream? = null,
     forwardBuildOutput: Boolean = enableGradleDebug.toBooleanFlag(),
@@ -228,7 +221,6 @@ fun TestProject.buildAndFail(
         enableGradleDebug = enableGradleDebug,
         kotlinDaemonDebugPort = kotlinDaemonDebugPort,
         enableBuildCacheDebug = enableBuildCacheDebug,
-        enableBuildScan = enableBuildScan,
         enableOfflineMode = enableOfflineMode,
         buildOptions = buildOptions,
         enableGradleDaemonMemoryLimitInMb = enableGradleDaemonMemoryLimitInMb,
@@ -246,7 +238,6 @@ private data class BuildParameterization(
     val enableGradleDebug: EnableGradleDebug,
     val kotlinDaemonDebugPort: Int?,
     val enableBuildCacheDebug: Boolean,
-    val enableBuildScan: Boolean,
     val enableOfflineMode: Boolean,
     val buildOptions: BuildOptions,
     val enableGradleDaemonMemoryLimitInMb: Int?,
@@ -263,7 +254,6 @@ private fun TestProject.buildWithAction(
     action: GradleRunner.() -> BuildResult = GradleRunner::build,
 ) {
     with(parameters) {
-        if (enableBuildScan) agreeToBuildScanService()
         ensureKotlinCompilerArgumentsPluginAppliedCorrectly(buildOptions)
 
         val runWithDebug = enableGradleDebug.toBooleanFlag()
@@ -277,7 +267,6 @@ private fun TestProject.buildWithAction(
             buildArguments = buildArguments,
             buildOptions = buildOptions,
             enableBuildCacheDebug = enableBuildCacheDebug,
-            enableBuildScan = enableBuildScan,
             enableOfflineMode = enableOfflineMode,
             enableGradleDaemonMemoryLimitInMb = enableGradleDaemonMemoryLimitInMb,
             enableKotlinDaemonMemoryLimitInMb = enableKotlinDaemonMemoryLimitInMb,
@@ -310,7 +299,6 @@ private fun TestProject.buildWithAction(
             } else {
                 gradleRunnerForBuild.action()
             }
-            if (enableBuildScan) buildResult.printBuildScanUrl()
             assertions(buildResult)
             buildResult.additionalAssertions(buildOptions)
         }
@@ -336,7 +324,6 @@ inline fun <reified T> TestProject.buildModel(
     enableGradleDebug: EnableGradleDebug = this.enableGradleDebug,
     kotlinDaemonDebugPort: Int? = this.kotlinDaemonDebugPort,
     enableBuildCacheDebug: Boolean = false,
-    enableBuildScan: Boolean = this.enableBuildScan,
     enableOfflineMode: Boolean = this.enableOfflineMode,
     enableGradleDaemonMemoryLimitInMb: Int? = this.enableGradleDaemonMemoryLimitInMb,
     enableKotlinDaemonMemoryLimitInMb: Int? = this.enableKotlinDaemonMemoryLimitInMb,
@@ -345,7 +332,7 @@ inline fun <reified T> TestProject.buildModel(
     noinline progressListener: ((ProgressEvent) -> Unit)? = null,
     noinline builder: (Project) -> T
 ) = buildModel(
-    tasks = tasks, modelClass = T::class.java, enableGradleDebug, kotlinDaemonDebugPort, enableBuildCacheDebug, enableBuildScan,
+    tasks = tasks, modelClass = T::class.java, enableGradleDebug, kotlinDaemonDebugPort, enableBuildCacheDebug,
     enableOfflineMode, enableGradleDaemonMemoryLimitInMb, enableKotlinDaemonMemoryLimitInMb, buildOptions, environmentVariables,
     progressListener, builder,
 )
@@ -356,7 +343,6 @@ fun <T> TestProject.buildModel(
     enableGradleDebug: EnableGradleDebug = this.enableGradleDebug,
     kotlinDaemonDebugPort: Int? = this.kotlinDaemonDebugPort,
     enableBuildCacheDebug: Boolean = false,
-    enableBuildScan: Boolean = this.enableBuildScan,
     enableOfflineMode: Boolean = this.enableOfflineMode,
     enableGradleDaemonMemoryLimitInMb: Int? = this.enableGradleDaemonMemoryLimitInMb,
     enableKotlinDaemonMemoryLimitInMb: Int? = this.enableKotlinDaemonMemoryLimitInMb,
@@ -370,7 +356,6 @@ fun <T> TestProject.buildModel(
         buildArguments = emptyList(), // it is actually task names, but for build model they passed separately
         buildOptions = buildOptions,
         enableBuildCacheDebug = enableBuildCacheDebug,
-        enableBuildScan = enableBuildScan,
         enableOfflineMode = enableOfflineMode,
         enableGradleDaemonMemoryLimitInMb = enableGradleDaemonMemoryLimitInMb,
         enableKotlinDaemonMemoryLimitInMb = enableKotlinDaemonMemoryLimitInMb,
@@ -569,7 +554,6 @@ class TestProject(
     projectPath: Path,
     val buildOptions: BuildOptions,
     val gradleVersion: GradleVersion,
-    val enableBuildScan: Boolean,
     val enableOfflineMode: Boolean,
     val enableGradleDaemonMemoryLimitInMb: Int?,
     val enableKotlinDaemonMemoryLimitInMb: Int?,
@@ -666,7 +650,6 @@ private fun commonBuildSetup(
     buildArguments: List<String>,
     buildOptions: BuildOptions,
     enableBuildCacheDebug: Boolean,
-    enableBuildScan: Boolean,
     enableOfflineMode: Boolean,
     enableGradleDaemonMemoryLimitInMb: Int?,
     enableKotlinDaemonMemoryLimitInMb: Int?,
@@ -701,7 +684,6 @@ private fun commonBuildSetup(
                     "-Dorg.gradle.jvmargs=${gradleJvmOptions.joinToJvmArgsString()}"
                 } else null,
                 if (enableBuildCacheDebug) "-Dorg.gradle.caching.debug=true" else null,
-                if (enableBuildScan) "--scan" else null,
                 if (enableOfflineMode) "--offline" else null,
                 if (kotlinDaemonJvmArgs.isNotEmpty()) {
                     // do not enclose as KGP transforms arguments like "-Xmx1024m" to -"-Xmx1024m": KT-72870
@@ -1088,36 +1070,6 @@ internal fun Path.addDependencyManagementToSettings(
 
     if (Files.exists(resolve("buildSrc"))) {
         resolve("buildSrc").addDependencyManagementToSettings(gradleRepositoriesMode, additionalDependencyRepositories, localRepo)
-    }
-}
-
-private fun TestProject.agreeToBuildScanService() {
-    val settingsFile = if (Files.exists(settingsGradle)) settingsGradle else settingsGradleKts
-    settingsFile.append(
-        """
-            
-        gradleEnterprise {
-            buildScan {
-                termsOfServiceUrl = "https://gradle.com/terms-of-service"
-                termsOfServiceAgree = "yes"
-            }
-        }
-
-        """.trimIndent()
-    )
-}
-
-private fun BuildResult.printBuildScanUrl() {
-    val buildScanUrl = output
-        .lineSequence()
-        .firstOrNull { it.contains("https://gradle.com/s/") }
-        ?.replaceBefore("https://gradle", "")
-    if (buildScanUrl != null) {
-        println("Build scan url: $buildScanUrl")
-    } else {
-        // It is ok to not fail the build as Develocity server may be down or have temporary issues.
-        // In such a case, we should not fail the whole test suite.
-        printBuildOutput()
     }
 }
 

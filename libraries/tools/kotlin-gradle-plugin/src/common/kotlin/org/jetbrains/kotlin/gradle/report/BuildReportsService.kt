@@ -5,11 +5,9 @@
 
 package org.jetbrains.kotlin.gradle.report
 
-import com.gradle.develocity.agent.gradle.adapters.BuildScanAdapter
 import org.gradle.api.Project
 import org.gradle.api.logging.Logging
 import org.gradle.tooling.events.task.TaskFinishEvent
-import org.jetbrains.kotlin.build.report.metrics.ValueType
 import org.jetbrains.kotlin.build.report.metrics.getAllMetrics
 import org.jetbrains.kotlin.build.report.statistics.*
 import org.jetbrains.kotlin.build.report.statistics.file.ReadableFileReportData
@@ -17,15 +15,11 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.plugin.statistics.GradleFileReportService
 import org.jetbrains.kotlin.gradle.report.data.BuildExecutionData
 import org.jetbrains.kotlin.gradle.report.data.BuildOperationRecord
-import org.jetbrains.kotlin.gradle.report.data.GradleCompileStatisticsData
-import org.jetbrains.kotlin.utils.addToStdlib.measureTimeMillisWithResult
 import org.jetbrains.kotlin.gradle.utils.nextKotlinLanguageVersion
 import java.io.File
 import java.net.InetAddress
-import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
-import kotlin.system.measureTimeMillis
 
 //Because of https://github.com/gradle/gradle/issues/23359 gradle issue, two build services interaction is not reliable at the end of the build
 //Switch back to proper BuildService as soon as this issue is fixed
@@ -40,7 +34,6 @@ class BuildReportsService {
     private val httpReportService = HttpReportService()
 
     private val tags = LinkedHashSet<StatTag>()
-    private var customValues = 0 // doesn't need to be thread-safe
 
     init {
         log.info("Build report service is registered. Unique build id: $buildUuid")
@@ -191,83 +184,6 @@ class BuildReportsService {
 
     }
 
-    internal fun addBuildScanReport(
-        event: TaskFinishEvent,
-        buildOperationRecord: BuildOperationRecord,
-        parameters: BuildReportParameters,
-        buildScan: BuildScanAdapter,
-    ) {
-        val buildScanSettings = parameters.reportingSettings.buildScanReportSettings ?: return
-
-        val (collectDataDuration, compileStatData) = measureTimeMillisWithResult {
-            prepareData(
-                event,
-                parameters.projectName, buildUuid, parameters.label,
-                parameters.kotlinVersion,
-                buildOperationRecord,
-                metricsToShow = buildScanSettings.metrics
-            )
-        }
-        log.debug("Collect data takes $collectDataDuration: $compileStatData")
-
-        compileStatData?.also {
-            addBuildScanReport(it, buildScanSettings.customValueLimit, buildScan)
-        }
-    }
-
-    internal fun addBuildScanReport(
-        buildOperationRecords: Collection<BuildOperationRecord>,
-        parameters: BuildReportParameters,
-        buildScan: BuildScanAdapter,
-    ) {
-        val buildScanSettings = parameters.reportingSettings.buildScanReportSettings ?: return
-
-        val (collectDataDuration, compileStatData) = measureTimeMillisWithResult {
-            transformOperationRecordsToCompileStatisticsData(
-                buildOperationRecords,
-                parameters,
-                onlyKotlinTask = true,
-                metricsToShow = buildScanSettings.metrics
-            )
-        }
-        log.debug("Collect data takes $collectDataDuration: $compileStatData")
-
-        compileStatData.forEach {
-            addBuildScanReport(it, buildScanSettings.customValueLimit, buildScan)
-        }
-    }
-
-    private fun addBuildScanReport(data: GradleCompileStatisticsData, customValuesLimit: Int, buildScan: BuildScanAdapter) {
-        val elapsedTime = measureTimeMillis {
-            tags.addAll(data.getTags())
-            if (customValues < customValuesLimit) {
-                readableString(data).forEach {
-                    if (customValues < customValuesLimit) {
-                        addBuildScanValue(buildScan, data, it)
-                    } else {
-                        log.debug(
-                            "Can't add any more custom values into build scan." +
-                                    " Statistic data for ${data.getTaskName()} was cut due to custom values limit."
-                        )
-                    }
-                }
-            } else {
-                log.debug("Can't add any more custom values into build scan.")
-            }
-        }
-
-        log.debug("Report statistic to build scan takes $elapsedTime ms")
-    }
-
-    private fun addBuildScanValue(
-        buildScan: BuildScanAdapter,
-        data: GradleCompileStatisticsData,
-        customValue: String,
-    ) {
-        buildScan.value(data.getTaskName(), customValue)
-        customValues++
-    }
-
     private fun reportTryNextToConsole(
         data: BuildExecutionData,
     ) {
@@ -297,95 +213,7 @@ class BuildReportsService {
         }
     }
 
-    private fun readableString(data: GradleCompileStatisticsData): List<String> {
-        val readableString = StringBuilder()
-        if (data.getNonIncrementalAttributes().isEmpty()) {
-            readableString.append("Incremental build; ")
-            data.getChanges().joinTo(readableString, prefix = "Changes: [", postfix = "]; ") { it.substringAfterLast(File.separator) }
-        } else {
-            data.getNonIncrementalAttributes().joinTo(
-                readableString,
-                prefix = "Non incremental build because: [",
-                postfix = "]; "
-            ) { it.readableString }
-        }
-
-        data.getKotlinLanguageVersion()?.also {
-            readableString.append("Kotlin language version: $it; ")
-        }
-
-        val timeData =
-            data.getBuildTimesMetrics()
-                .map { (key, value) -> "${key.readableString}: ${value}ms" } //sometimes it is better to have separate variable to be able debug
-        val perfData = data.getPerformanceMetrics().map { (key, value) ->
-            when (key.type) {
-                ValueType.BYTES -> "${key.readableString}: ${formatSize(value)}"
-                ValueType.MILLISECONDS -> DATE_FORMATTER.format(value)
-                else -> "${key.readableString}: $value"
-            }
-        }
-        timeData.union(perfData).joinTo(readableString, ",", "Performance: [", "]")
-
-        return splitStringIfNeed(readableString.toString(), CUSTOM_VALUE_LENGTH_LIMIT)
-    }
-
-    private fun splitStringIfNeed(str: String, lengthLimit: Int): List<String> {
-        val splattedString = ArrayList<String>()
-        var tempStr = str
-        while (tempStr.length > lengthLimit) {
-            val subSequence = tempStr.substring(lengthLimit)
-            var index = subSequence.lastIndexOf(';')
-            if (index == -1) {
-                index = subSequence.lastIndexOf(',')
-                if (index == -1) {
-                    index = lengthLimit
-                }
-            }
-            splattedString.add(tempStr.substring(index))
-            tempStr = tempStr.substring(index)
-
-        }
-        splattedString.add(tempStr)
-        return splattedString
-    }
-
-    internal fun initBuildScanTags(buildScan: BuildScanAdapter, label: String?) {
-        buildScan.tag(buildUuid)
-        label?.also {
-            buildScan.tag(it)
-        }
-    }
-
-    internal fun addCollectedTags(buildScan: BuildScanAdapter) {
-        replaceWithCombinedTag(
-            StatTag.KOTLIN_1,
-            StatTag.KOTLIN_2,
-            StatTag.KOTLIN_1_AND_2
-        )
-
-        replaceWithCombinedTag(
-            StatTag.INCREMENTAL,
-            StatTag.NON_INCREMENTAL,
-            StatTag.INCREMENTAL_AND_NON_INCREMENTAL
-        )
-
-        tags.forEach { buildScan.tag(it.readableString) }
-    }
-
-    private fun replaceWithCombinedTag(firstTag: StatTag, secondTag: StatTag, combinedTag: StatTag) {
-        val containsFirstTag = tags.remove(firstTag)
-        val containsSecondTag = tags.remove(secondTag)
-        when {
-            containsFirstTag && containsSecondTag -> tags.add(combinedTag)
-            containsFirstTag -> tags.add(firstTag)
-            containsSecondTag -> tags.add(secondTag)
-        }
-    }
-
     companion object {
-
-        const val CUSTOM_VALUE_LENGTH_LIMIT = 100_000
-        private val DATE_FORMATTER = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
 
         fun getStartParameters(project: Project) = project.gradle.startParameter.let {
             BuildStartParameters(

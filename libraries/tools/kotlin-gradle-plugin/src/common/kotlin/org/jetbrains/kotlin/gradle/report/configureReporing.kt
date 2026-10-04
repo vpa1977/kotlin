@@ -8,7 +8,6 @@ package org.jetbrains.kotlin.gradle.report
 import org.gradle.api.Project
 import org.jetbrains.kotlin.build.report.FileReportSettings
 import org.jetbrains.kotlin.build.report.HttpReportSettings
-import org.jetbrains.kotlin.build.report.metrics.getAllMetrics
 import org.jetbrains.kotlin.gradle.plugin.PropertiesProvider
 import org.jetbrains.kotlin.gradle.plugin.PropertiesProvider.PropertyNames.KOTLIN_BUILD_REPORT_FILE_DIR
 import org.jetbrains.kotlin.gradle.plugin.PropertiesProvider.PropertyNames.KOTLIN_BUILD_REPORT_SINGLE_FILE
@@ -17,8 +16,6 @@ import org.jetbrains.kotlin.gradle.plugin.PropertiesProvider.PropertyNames.KOTLI
 import org.jetbrains.kotlin.gradle.plugin.internal.isProjectIsolationEnabled
 import org.jetbrains.kotlin.util.capitalizeDecapitalize.toUpperCaseAsciiOnly
 import java.io.File
-
-private val availableMetrics = getAllMetrics().map { it.name }.toSet()
 
 internal fun reportingSettings(project: Project): ReportingSettings {
     val properties = PropertiesProvider(project)
@@ -67,18 +64,6 @@ internal fun reportingSettings(project: Project): ReportingSettings {
         null
     }
 
-    val buildScanSettings = if (buildReportOutputTypes.contains(BuildReportType.BUILD_SCAN)) {
-        val metrics = properties.buildReportBuildScanMetrics?.split(",")?.toSet()
-        metrics?.forEach {
-            if (!availableMetrics.contains(it.trim().uppercase())) {
-                throw IllegalStateException("Unknown metric: '$it', list of available metrics: $availableMetrics")
-            }
-        }
-        BuildScanSettings(properties.buildReportBuildScanCustomValuesLimit, metrics)
-    } else {
-        null
-    }
-
     val singleOutputFile = if (buildReportOutputTypes.contains(BuildReportType.SINGLE_FILE)) {
         properties.buildReportSingleFile?.let {
             validateFileName(it, KOTLIN_BUILD_REPORT_SINGLE_FILE)
@@ -98,7 +83,6 @@ internal fun reportingSettings(project: Project): ReportingSettings {
         buildReportLabel = properties.buildReportLabel,
         fileReportSettings = fileReportSettings,
         httpReportSettings = httpReportSettings,
-        buildScanReportSettings = buildScanSettings,
         buildReportOutputs = buildReportOutputTypes,
         singleOutputFile = singleOutputFile,
         jsonOutputDir = jsonReportDir,

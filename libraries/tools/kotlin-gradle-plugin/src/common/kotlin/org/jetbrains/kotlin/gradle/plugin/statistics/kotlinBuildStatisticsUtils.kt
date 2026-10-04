@@ -39,7 +39,6 @@ internal fun collectGeneralConfigurationTimeMetrics(
         configurationTimeMetrics.put(StringMetrics.KOTLIN_GRADLE_PLUGIN_VERSION, pluginVersion)
         buildReportOutputs.forEach {
             when (it) {
-                BuildReportType.BUILD_SCAN -> configurationTimeMetrics.put(BooleanMetrics.BUILD_SCAN_BUILD_REPORT, true)
                 BuildReportType.FILE -> configurationTimeMetrics.put(BooleanMetrics.FILE_BUILD_REPORT, true)
                 BuildReportType.HTTP -> configurationTimeMetrics.put(BooleanMetrics.HTTP_BUILD_REPORT, true)
                 BuildReportType.SINGLE_FILE -> configurationTimeMetrics.put(BooleanMetrics.SINGLE_FILE_BUILD_REPORT, true)

@@ -103,7 +103,6 @@ dependencies {
 
     implementation(libs.org.tukaani.xz)
 
-    compileOnly(libs.develocity.gradlePlugin)
     compileOnly(libs.ant) // for accessing the zip-related classes that are present in Gradle's runtime
     compileOnly(gradleApi())
     compileOnly(project(":android-sdk-provisioner"))
