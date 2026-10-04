@@ -12,7 +12,6 @@ repositories {
 }
 
 dependencies {
-    implementation(libs.gradle.toolchainsFoojayResolver.gradlePlugin)
 }
 
 kotlin {
