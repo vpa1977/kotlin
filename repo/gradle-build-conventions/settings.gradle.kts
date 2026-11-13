@@ -2,33 +2,6 @@ pluginManagement {
     includeBuild("../gradle-settings-conventions")
 
     repositories {
-        // duplicated from repositories.kt because pluginManagement block annot access to it.
-        exclusiveContent {
-            forRepository {
-                maven {
-                    name = "kotlin-dependencies"
-                    setUrl("https://redirector.kotlinlang.org/maven/kotlin-dependencies")
-                }
-            }
-            filter {
-                includeModule("org.jetbrains.dukat", "dukat")
-                includeModule("org.jetbrains.kotlin", "android-dx")
-                includeModule("org.jetbrains.kotlin", "jcabi-aether")
-                includeModule("org.jetbrains.kotlin", "protobuf-lite")
-                includeModule("org.jetbrains.kotlin", "protobuf-relocated")
-                includeModule("org.jetbrains.kotlinx", "kotlinx-metadata-klib")
-            }
-        }
-        exclusiveContent {
-            forRepository {
-                google()
-            }
-            filter {
-                includeGroupByRegex("""com\.android(\..*)?""")
-                includeGroupByRegex("""androidx(\..*)?""")
-                includeGroup("com.google.testing.platform")
-            }
-        }
         gradlePluginPortal()
         mavenCentral()
     }

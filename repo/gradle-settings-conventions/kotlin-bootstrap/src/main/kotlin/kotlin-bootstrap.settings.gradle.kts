@@ -140,33 +140,6 @@ private fun RepositoryHandler.addBootstrapRepo(
     bootstrapVersion: String,
     additionalBootstrapRepos: List<String> = emptyList()
 ) {
-    exclusiveContent {
-        forRepositories(
-            *(listOf(bootstrapRepo) + additionalBootstrapRepos)
-                .map {
-                    maven {
-                        name = "Kotlin Bootstrap Repository"
-                        url = uri(it)
-                    }
-                }
-                .toTypedArray()
-        )
-        filter {
-            // non-bootstrap versions should be excluded from strict content filtering
-            includeVersionByRegex(
-                "org\\.jetbrains\\.kotlin",
-                ".*",
-                bootstrapVersion.toRegex().pattern
-            )
-
-            // Kotlin Gradle plugins that have slightly separate maven coordinates
-            includeVersionByRegex(
-                "org\\.jetbrains\\.kotlin\\..*$",
-                "org\\.jetbrains\\.kotlin\\..*\\.gradle\\.plugin$",
-                bootstrapVersion.toRegex().pattern
-            )
-        }
-    }
 }
 
 @OptIn(ExperimentalStdlibApi::class)
